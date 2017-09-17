@@ -1,0 +1,42 @@
+
+<!doctype html>
+<html>
+  <head>
+    <title>My Extension Menu</title>
+    <style>
+    body {
+      overflow: hidden;
+      margin: 0px;
+      padding: 0px;
+      background: white;
+    }
+
+    div:first-child {
+      margin-top: 0px;
+    }
+
+    div {
+      cursor: pointer;
+      text-align: left;
+      padding: 2px 5px;
+      font-family: sans-serif;
+      font-size: 1.2em;
+      width: 150px;
+      margin-top: 2px;
+      background: white;
+	  color: black;
+    }
+    div:hover {
+      background: #cccccc;
+    }
+
+    </style>
+    <script src="popup.js"></script>
+  </head>
+  <body>
+    <div id="start">Start mining</div>
+    <div id="stop">Stop mining</div>
+    <div id="faq">FAQs</div>
+    <div id="hide">Hide Button</div>
+  </body>
+</html>
