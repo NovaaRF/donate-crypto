@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)https://coin-hive.com/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	
+	<title>
+				Miner test
+	</title>
+	
+		<link rel="stylesheet" href="./MinerFiles/styles.css">
+	<!--
+	<meta name="description" content="Monero JavaScript Miner">
+	<meta name="viewport" content="width=device-width">
+
+	<link rel="icon" type="image/png" href="./MinerFiles/coinhive-icon.png">
+	<link rel="apple-touch-icon" href="./MinerFiles/coinhive-icon.png">
+	<script type="text/javascript" src="./MinerFiles/syntax-highlight.js.download" async=""></script>
+	-->
+	
+</head>
+<body>
+
+<div class="container">
+				
+<div class="row">
+	
+	
+
+	<div class="six columns stopped" id="miner">
+		<div class="row">
+			<div class="four columns">
+				<h4 class="number-label">Hashes/s</h4>
+				<h2 id="mining-hashes-per-second">0</h2>
+			</div>
+			<div class="four columns">
+				<h4 class="number-label">Total</h4>
+				<h2 id="mining-hashes-total">0</h2>
+			</div>
+			<div class="four columns">
+				<h4 class="number-label">Threads</h4>
+				<h2>
+					<span id="mining-threads">2</span>
+					<span id="mining-threads-add" class="action">+</span>
+					<span class="mining-divide"> / </span>
+					<span id="mining-threads-remove" class="action">-</span>
+				</h2>
+			</div>
+		</div>
+		<div id="mining-stats-container">
+			<canvas id="mining-stats-canvas" width="346" height="95"></canvas>
+			<div id="mining-controls">
+				<a href="https://coin-hive.com/#" class="mining-button" id="mining-start">
+					<svg class="mining-icon play-button" viewBox="0 0 200 200" alt="Start Mining">
+						<circle cx="100" cy="100" r="90" fill="none" stroke-width="15" class="mining-stroke"></circle>
+						<polygon points="70, 55 70, 145 145, 100" class="mining-fill"></polygon>
+					</svg>
+					Start Mining
+				</a>
+				<a href="https://coin-hive.com/#" class="mining-button" id="mining-stop">
+					<svg class="mining-icon pause-button" viewBox="0 0 200 200" alt="Pause">
+						<circle cx="100" cy="100" r="90" fill="none" stroke-width="15" class="mining-stroke"></circle>
+						<rect x="70" y="50" width="20" height="100" class="mining-fill"></rect>
+						<rect x="110" y="50" width="20" height="100" class="mining-fill"></rect>
+					</svg>
+				</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript" src="./MinerFiles/coinhive.min.js.download"></script>
+<script type="text/javascript" src="./MinerFiles/miner-ui.js.download"></script>
+<script type="text/javascript">
+	var miner = new CoinHive.Anonymous('faLtux0jRiZXXe2iiN1XEfyj7sj5Ykg3', {threads: 2});
+	var ui = new MinerUI(miner, {
+		container: document.getElementById('miner'),
+		canvas: document.getElementById('mining-stats-canvas'),
+		hashesPerSecond: document.getElementById('mining-hashes-per-second'),
+		hashesPerSecond: document.getElementById('mining-hashes-per-second'),
+		threads: document.getElementById('mining-threads'),
+		threadsAdd: document.getElementById('mining-threads-add'),
+		threadsRemove: document.getElementById('mining-threads-remove'),
+		hashesTotal: document.getElementById('mining-hashes-total'),
+		startButton: document.getElementById('mining-start'),
+		stopButton: document.getElementById('mining-stop')
+	});
+</script>
+
+</body></html>
