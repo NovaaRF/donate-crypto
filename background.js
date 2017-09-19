@@ -8,7 +8,7 @@
 var startMine = function(){
     alert("mining started!");
 	chrome.browserAction.setIcon({path:"iconRunning.png"});
-	miner.start();
+	//miner.start();
 };
 var stopMine = function(){
     alert("mining stopped :(");
@@ -25,4 +25,4 @@ chrome.extension.onMessage.addListener(
     }
 );
 
-miner.on('close',stopMine());
+//miner.on('close',stopMine());
