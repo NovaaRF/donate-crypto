@@ -1,9 +1,9 @@
 
+var background = chrome.extension.getBackgroundPage();
 
-function main(){
-
-var miner = new CoinHive.Anonymous('faLtux0jRiZXXe2iiN1XEfyj7sj5Ykg3', {threads: 2});
-	var ui = new MinerUI(miner, {
+	
+document.addEventListener('DOMContentLoaded', function () {
+	var ui = new MinerUI(background.miner, {
 		container: document.getElementById('miner'),
 		canvas: document.getElementById('mining-stats-canvas'),
 		hashesPerSecond: document.getElementById('mining-hashes-per-second'),
@@ -15,9 +15,4 @@ var miner = new CoinHive.Anonymous('faLtux0jRiZXXe2iiN1XEfyj7sj5Ykg3', {threads:
 		startButton: document.getElementById('mining-start'),
 		stopButton: document.getElementById('mining-stop')
 	});
-}
-	
-document.addEventListener('DOMContentLoaded', function () {
-	//document.querySelector('button').addEventListener('click', clickHandler);
-	main();
 });

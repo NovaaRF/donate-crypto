@@ -2,9 +2,11 @@
 
 //alert("Your Chrome extension is running!");
 
-//var miner = new CoinHive.Token('faLtux0jRiZXXe2iiN1XEfyj7sj5Ykg3',256);
-//alert("Got this far!")
+var miner = new CoinHive.Anonymous('faLtux0jRiZXXe2iiN1XEfyj7sj5Ykg3', {threads: 1});
 
+//want to get persistent UI bars, not currently working.
+var UIstats = [];
+/*
 var startMine = function(){
     alert("mining started!");
 	chrome.browserAction.setIcon({path:"iconRunning.png"});
@@ -26,3 +28,5 @@ chrome.extension.onMessage.addListener(
 );
 
 //miner.on('close',stopMine());
+
+*/

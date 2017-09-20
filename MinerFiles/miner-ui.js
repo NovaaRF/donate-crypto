@@ -13,9 +13,20 @@ var MinerUI = function(miner, elements) {
 	this.elements.threadsAdd.addEventListener('click', this.addThread.bind(this));
 	this.elements.threadsRemove.addEventListener('click', this.removeThread.bind(this));
 
-	this.stats = [];
-	for (var i = 0, x = 0; x < 300; i++, x += 5) {
-		this.stats.push({hashes: 0, accepted: 0});
+	//plug in updated values right away
+	this.elements.threads.textContent = this.miner.getNumThreads();
+	this.elements.hashesTotal.textContent = this.miner.getTotalHashes(true);
+	
+	//if miner running in background, activate UI
+	if(this.miner.isRunning()) {
+		this.runUI();
+	}
+	
+	this.stats = background.UIstats;
+	if(this.stats == 0 || null){
+		for (var i = 0, x = 0; x < 300; i++, x += 5) {
+			this.stats.push({hashes: 0, accepted: 0});
+		}
 	}
 
 	this.didAcceptHash = false;
@@ -25,7 +36,14 @@ var MinerUI = function(miner, elements) {
 };
 
 MinerUI.prototype.start = function(ev) {
-	this.miner.start(CoinHive.FORCE_MULTI_TAB);
+	this.miner.start(background.CoinHive.IF_EXCLUSIVE_TAB);
+	this.runUI();
+
+	ev.preventDefault();
+	return false;
+};
+
+MinerUI.prototype.runUI = function() {
 	this.elements.container.classList.add('running');
 	this.elements.container.classList.remove('stopped');
 
@@ -33,9 +51,6 @@ MinerUI.prototype.start = function(ev) {
 	this.intervalDrawGraph = setInterval(this.drawGraph.bind(this), 500);
 
 	this.elements.threads.textContent = this.miner.getNumThreads();
-
-	ev.preventDefault();
-	return false;
 };
 
 MinerUI.prototype.stop = function(ev) {
@@ -46,6 +61,15 @@ MinerUI.prototype.stop = function(ev) {
 
 	clearInterval(this.intervalUpdateStats);
 	clearInterval(this.intervalDrawGraph);
+	
+	//display with k, M abreviations
+	var dispTotal = this.miner.getTotalHashes(true);
+	if(dispTotal > 1000000){
+		dispTotal = (dispTotal/1000000).toFixed(2) + "M";
+	} else if(dispTotal > 1000){
+		dispTotal = (dispTotal/1000).toFixed(2) + "k";
+	}
+	this.elements.hashesTotal.textContent = dispTotal;
 
 	ev.preventDefault();
 	return false;
@@ -69,7 +93,15 @@ MinerUI.prototype.removeThread = function(ev) {
 
 MinerUI.prototype.updateStats = function() {
 	this.elements.hashesPerSecond.textContent = this.miner.getHashesPerSecond().toFixed(1);
-	this.elements.hashesTotal.textContent = this.miner.getTotalHashes(true);
+	
+	//display abrevs.
+	var dispTotal = this.miner.getTotalHashes(true);
+	if(dispTotal > 1000000){
+		dispTotal = (dispTotal/1000000).toFixed(2) + "M";
+	} else if(dispTotal > 1000){
+		dispTotal = (dispTotal/1000).toFixed(2) + "k";
+	}
+	this.elements.hashesTotal.textContent = dispTotal;
 };
 
 MinerUI.prototype.drawGraph = function() {
@@ -112,4 +144,7 @@ MinerUI.prototype.drawGraph = function() {
 			this.ctx.fillRect(w - j*10, h - vh, 9, vh);
 		}
 	}
+	
+	//sync with persistent UIstats
+	background.UIstats = this.stats;
 };
