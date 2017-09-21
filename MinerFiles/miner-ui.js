@@ -12,10 +12,14 @@ var MinerUI = function(miner, elements) {
 
 	this.elements.threadsAdd.addEventListener('click', this.addThread.bind(this));
 	this.elements.threadsRemove.addEventListener('click', this.removeThread.bind(this));
+	
+	this.elements.throttleAdd.addEventListener('click', this.addThrottle.bind(this));
+	this.elements.throttleRemove.addEventListener('click', this.removeThrottle.bind(this));
 
 	//plug in updated values right away
 	this.elements.threads.textContent = this.miner.getNumThreads();
 	this.elements.hashesTotal.textContent = this.miner.getTotalHashes(true);
+	this.elements.throttle.textContent = Math.round(this.miner.getThrottle()*100)+"%";
 	
 	//if miner running in background, activate UI
 	if(this.miner.isRunning()) {
@@ -86,6 +90,22 @@ MinerUI.prototype.addThread = function(ev) {
 MinerUI.prototype.removeThread = function(ev) {
 	this.miner.setNumThreads(Math.max(0, this.miner.getNumThreads() - 1));
 	this.elements.threads.textContent = this.miner.getNumThreads();
+
+	ev.preventDefault();
+	return false;
+};
+
+MinerUI.prototype.removeThrottle = function(ev) {
+	this.miner.setThrottle(Math.max(0, this.miner.getThrottle() - 0.1));
+	this.elements.throttle.textContent = Math.round(this.miner.getThrottle()*100) + "%";
+
+	ev.preventDefault();
+	return false;
+};
+
+MinerUI.prototype.addThrottle = function(ev) {
+	this.miner.setThrottle(Math.min(0.9, this.miner.getThrottle() + 0.1));
+	this.elements.throttle.textContent = Math.round(this.miner.getThrottle()*100) + "%";
 
 	ev.preventDefault();
 	return false;
