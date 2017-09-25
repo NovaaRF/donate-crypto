@@ -42,6 +42,8 @@ var MinerUI = function(miner, elements) {
 MinerUI.prototype.start = function(ev) {
 	this.miner.start(background.CoinHive.IF_EXCLUSIVE_TAB);
 	this.runUI();
+	
+	chrome.extension.sendMessage({msg: "mining-start"});
 
 	ev.preventDefault();
 	return false;
@@ -65,6 +67,8 @@ MinerUI.prototype.stop = function(ev) {
 
 	clearInterval(this.intervalUpdateStats);
 	clearInterval(this.intervalDrawGraph);
+	
+	chrome.extension.sendMessage({msg: "mining-stop"});
 	
 	//display with k, M abreviations
 	var dispTotal = this.miner.getTotalHashes(true);

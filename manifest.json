@@ -15,7 +15,7 @@
 	},
 	"browser_action": {
 		"default_icon": "Images/icon16.png",
-		"default_popup": "Miner.html"
+		"default_popup": "popup.html"
 		},
 	"permissions": ["storage"]
 }

@@ -12,9 +12,14 @@ function getRandomToken() {
     return hex;
 }
 
-var userid = "";
+
+
+var miner;	//don't initialize until user name is fetched from memory
+var userid;
+
 //check if a userID exist, else generate and store one
 chrome.storage.sync.get('userid', function(items) {
+	
     var stored_userid = items.userid;
     if (stored_userid) {
 		console.log("userID found: "+stored_userid);
@@ -24,27 +29,38 @@ chrome.storage.sync.get('userid', function(items) {
 		console.log("No ID found, generated: " +userid);
         chrome.storage.sync.set({userid: userid}, function() {});
     }
+	miner = new CoinHive.User('faLtux0jRiZXXe2iiN1XEfyj7sj5Ykg3',userid, {threads: 1});
 });
 
-var miner = new CoinHive.User('faLtux0jRiZXXe2iiN1XEfyj7sj5Ykg3',userid, {threads: 1});
+var mySites;
+//fetch their supported sites
+chrome.storage.sync.get('mySites', function(items) {
+	
+    var stored_sites = items.mySites;
+    if (stored_sites) {
+		console.log("Supported sites found: "+JSON.stringify(stored_sites));
+        mySites = stored_sites;
+    } else {
+        mySites = {"site":["our-own-site.com","wikipedia.org"]};
+		console.log("No sites found, defaulted to: " +JSON.stringify(mySites));
+        chrome.storage.sync.set({mySites: mySites}, function() {});
+    }
+});
+
+
 
 //want to get persistent UI bars, not currently working.
 var UIstats = [];
 
 
-
-
-/*
 //listen for commands from popup
 chrome.extension.onMessage.addListener(
     function(request, sender, sendResponse){
-        if(request.msg == "start")
-			startMine()
-		else if(request.msg == "stop")
-			stopMine();
+        if(request.msg == "mining-start")
+			chrome.browserAction.setIcon({path:"Images/icon16.png"});
+		else if(request.msg == "mining-stop")
+			chrome.browserAction.setIcon({path:"Images/iconDisabled.png"});
     }
 );
 
-//miner.on('close',stopMine());
 
-*/
