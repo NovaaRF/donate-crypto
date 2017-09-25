@@ -1,3 +1,4 @@
+
 var background = chrome.extension.getBackgroundPage();
 var fbShowing = false;
 
@@ -37,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		}else{
 			document.getElementById('feedback_text').style.display = 'block';
 			fbShowing = true;
-		}
-			
+		}	
 	});
+
 });
