@@ -3,6 +3,7 @@ var background = chrome.extension.getBackgroundPage();
 
 	
 document.addEventListener('DOMContentLoaded', function () {
+	//instantiate the miner UI with links to the elements
 	var ui = new MinerUI(background.miner, {
 		container: document.getElementById('miner'),
 		canvas: document.getElementById('mining-stats-canvas'),
@@ -16,5 +17,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		throttle: document.getElementById('mining-throttle'),
 		throttleAdd: document.getElementById('mining-throttle-add'),
 		throttleRemove: document.getElementById('mining-throttle-remove')
+	});
+	
+	//configure 'back' button
+	document.getElementById('viz_back').addEventListener('click',function(){
+		window.location.href="popup.html";
 	});
 });
