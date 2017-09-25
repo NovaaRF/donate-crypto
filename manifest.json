@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "My Cool Extension",
-	"version": "0.1",
+	"version": "0.0.2",
   
 	"description": "Do some really cool stuff",
 	"icons": {"16": "Images/icon16.png",
@@ -15,7 +15,7 @@
 	},
 	"browser_action": {
 		"default_icon": "Images/icon16.png",
-		"default_popup": "Miner.html"
+		"default_popup": "popup.html"
 		},
 	"permissions": ["storage"]
 }
