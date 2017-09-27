@@ -7,16 +7,17 @@ function passBack(e) {
   chrome.extension.sendMessage({msg: e});
 }
 
-//once loaded, update fields and add listeners
+
 document.addEventListener('DOMContentLoaded', function () {
-	
+	//once loaded, update fields
 	if(background.miner.isRunning()){
 		document.getElementById('start').style.display = 'none';
 		document.getElementById('stop').style.display = 'block';
 	}
-
-	document.getElementById('visualizer').addEventListener('click',function(){
-		window.location.href="Miner.html";
+	
+	//add listners and functions for each menu item
+	document.getElementById('my-sites').addEventListener('click',function(){
+		window.location.href="addSites.html";
 	});
 	document.getElementById('start').addEventListener('click',function(){
 		background.miner.start();
@@ -28,10 +29,13 @@ document.addEventListener('DOMContentLoaded', function () {
 		passBack("mining-stop");
 		window.close();
 	});
-	document.getElementById('faq').addEventListener('click',function(e){
+	document.getElementById('visualizer').addEventListener('click',function(){
+		window.location.href="Miner.html";
+	});
+	document.getElementById('faq').addEventListener('click',function(){
 		chrome.tabs.create({url:"FAQs.html"});
 	});
-	document.getElementById('feedback').addEventListener('click',function(e){
+	document.getElementById('feedback').addEventListener('click',function(){
 		if(fbShowing){
 			document.getElementById('feedback_text').style.display = 'none';
 			fbShowing = false;

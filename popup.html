@@ -10,11 +10,6 @@
       padding: 10px 1px;
       background: #f5f5f5;
     }
-
-    div:first-child {
-      margin-top: 0px;
-    }
-
     div {
       cursor: pointer;
       text-align: left;
@@ -23,24 +18,35 @@
       font-size: 1.2em;
       width: 170px;
       margin-top: 2px;
-      
 	  color: black;
     }
     div:hover {
       background: #e6e6e6;
     }
+	div.no-click {
+      cursor:default;
+	  font-size:1em;
+	  pointer-events: none;
+    }
+	span.bold {
+		margin-bottom: 1em;
+		margin-top: 0;
+		font-size: 1.2em;
+		font-weight: bold;
+	}
 
     </style>
     <script src="popup.js"></script>
   </head>
   
   <body>
-    <div id="start">Start mining</div>
-    <div id="stop" style="display:none">Pause mining</div>
+	<div id="my-sites">My supported sites</div>
+    <div id="start">Start ThisApp</div>
+    <div id="stop" style="display:none">Pause ThisApp</div>
 	<div id="visualizer">Visualizer</div>
     <div id="faq">FAQs</div>
 	<div id="feedback">Feedback</div>
-	<div id="feedback_text" style="display:none; cursor:default; font-size:1em; pointer-events: none;">
+	<div id="feedback_text" class="no-click" style="display:none;">
 		Get in touch with us at:<br>
 		<a href="mailto:ThisApp@gmail.com">ThisApp@gmail.com</a></div>
     <!-- TODO: <div id="hide">Hide Button</div> -->
