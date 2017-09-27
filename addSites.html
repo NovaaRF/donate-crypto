@@ -27,6 +27,12 @@
 	  font-size:1.2em;
 	  pointer-events: none;
     }
+	div.container {
+      cursor:default;
+	  font-size:1em;
+	  pointer-events: none;
+	  padding: 0px 7px;
+    }
 	span.bold {
 		margin-bottom: 0.5em;
 		margin-top: 0;
@@ -39,9 +45,11 @@
   </head>
   
   <body>
-	<div class="no-click"><span class="bold">Currently supporting:</span>
-	<p><span id="supporting">this-app.com<br>Wikipedia.org<span></p></div>
-	<hr width="90%" size="1" align="center" noshade>
+	<div class="no-click"><span class="bold">Currently supporting:</span></div>
+	<div id="sites-list" class="container">
+
+	</div>
+	<hr id="sites-line" width="90%" size="1" align="center" noshade>
 	<div id="add-site">Add sites</div>
 	<div id="remove-site">Remove sites</div>
     <div id="add-back">Back</div>

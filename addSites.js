@@ -1,4 +1,31 @@
+var background = chrome.extension.getBackgroundPage();
 var state = "showing";
+
+
+//update and show the menu
+function renderDefault() {
+	console.log("Found " + background.mySites.site.length + " sites in storage");
+	console.log("Current sites: " + background.mySites.site);
+	
+	var siteList = document.getElementById('sites-list');
+	
+	//clear the list
+	while (siteList.firstChild) {
+		siteList.removeChild(siteList.firstChild);
+	}
+	
+	//create and add <div> item for each site in array
+	for(var i = 0; i < background.mySites.site.length; i++){
+		var newItem = document.createElement("div");
+		var textnode = document.createTextNode(background.mySites.site[i]);
+		newItem.appendChild(textnode);
+		siteList.appendChild(newItem);
+	}
+	
+	document.getElementById('remove-site').style.display = 'block';
+	document.getElementById('add-site').style.display = 'block';
+	state = "showing";
+}
 
 //show/hide buttons based on the state
 function setState(new_state) {
@@ -9,16 +36,23 @@ function setState(new_state) {
 		document.getElementById('add-site').style.display = 'none';
 		state = "removing";
 	} else if(state == "adding" && new_state == "add"){
-		document.getElementById('remove-site').style.display = 'block';
-		state = "showing";
+		//add a site to the list
+		background.mySites.site.push("a new site");
+		renderDefault();
 	} else if(state == "removing" && new_state == "remove"){
-		document.getElementById('add-site').style.display = 'block';
-		state = "showing";
+		//remove an element from the sites array
+		var removed = background.mySites.site.splice(0,1);
+		console.log("Removed the site: " + removed);
+		renderDefault();
 	}
+	console.log("State is now: "+state);
 }
 
 document.addEventListener('DOMContentLoaded', function (){
+	//load stored sites in display
+	renderDefault();
 	
+	//add click listeners
 	document.getElementById('add-site').addEventListener('click',function(){
 		setState("add");
 	});

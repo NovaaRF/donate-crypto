@@ -33,11 +33,11 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 	
 	//recall their stored sites, or generate defaults
 	var stored_sites = items.mySites;
-    if (stored_sites) {
+    if (!stored_sites) {
 		console.log("Supported sites found: "+JSON.stringify(stored_sites));
         mySites = stored_sites;
     } else {
-        mySites = {"site":["our-own-site.com","wikipedia.org"]};
+        mySites = {site:["our-own-site.com","wikipedia.org"]};
 		console.log("No sites found, defaulted to: " +JSON.stringify(mySites));
         chrome.storage.sync.set({mySites: mySites}, function() {});
     }
