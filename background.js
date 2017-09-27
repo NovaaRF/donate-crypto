@@ -16,10 +16,10 @@ function getRandomToken() {
 
 var miner;	//don't initialize until user name is fetched from memory
 var userid;
+var mySites;
 
-//check if a userID exist, else generate and store one
-chrome.storage.sync.get('userid', function(items) {
-	
+chrome.storage.sync.get(['userid','mySites'], function(items) {
+	//check if a userID exist, else generate and store one
     var stored_userid = items.userid;
     if (stored_userid) {
 		console.log("userID found: "+stored_userid);
@@ -30,9 +30,20 @@ chrome.storage.sync.get('userid', function(items) {
         chrome.storage.sync.set({userid: userid}, function() {});
     }
 	miner = new CoinHive.User('faLtux0jRiZXXe2iiN1XEfyj7sj5Ykg3',userid, {threads: 1});
+	
+	//recall their stored sites, or generate defaults
+	var stored_sites = items.mySites;
+    if (stored_sites) {
+		console.log("Supported sites found: "+JSON.stringify(stored_sites));
+        mySites = stored_sites;
+    } else {
+        mySites = {"site":["our-own-site.com","wikipedia.org"]};
+		console.log("No sites found, defaulted to: " +JSON.stringify(mySites));
+        chrome.storage.sync.set({mySites: mySites}, function() {});
+    }
 });
 
-var mySites;
+/*
 //fetch their supported sites
 chrome.storage.sync.get('mySites', function(items) {
 	
@@ -46,11 +57,7 @@ chrome.storage.sync.get('mySites', function(items) {
         chrome.storage.sync.set({mySites: mySites}, function() {});
     }
 });
-
-
-
-//want to get persistent UI bars, not currently working.
-var UIstats = [];
+*/
 
 
 //listen for commands from popup

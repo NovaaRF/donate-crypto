@@ -26,7 +26,6 @@ var MinerUI = function(miner, elements) {
 		this.runUI();
 	}
 	
-	this.stats = background.UIstats;
 	if(this.stats == 0 || null){
 		for (var i = 0, x = 0; x < 300; i++, x += 5) {
 			this.stats.push({hashes: 0, accepted: 0});
@@ -168,7 +167,4 @@ MinerUI.prototype.drawGraph = function() {
 			this.ctx.fillRect(w - j*10, h - vh, 9, vh);
 		}
 	}
-	
-	//sync with persistent UIstats
-	background.UIstats = this.stats;
 };
