@@ -19,6 +19,7 @@ function renderDefault() {
 		var newItem = document.createElement("div");
 		var textnode = document.createTextNode(background.mySites.site[i]);
 		newItem.appendChild(textnode);
+		newItem.setAttribute("id","site-" + i);
 		siteList.appendChild(newItem);
 	}
 	
@@ -31,14 +32,25 @@ function renderDefault() {
 function setState(new_state) {
 	if(state == "showing" && new_state == "add"){
 		document.getElementById('remove-site').style.display = 'none';
+		document.getElementById('new-site-input').style.display = 'block';
 		state = "adding";
+		
 	} else if(state == "showing" && new_state == "remove"){
 		document.getElementById('add-site').style.display = 'none';
 		state = "removing";
+		
 	} else if(state == "adding" && new_state == "add"){
 		//add a site to the list
-		background.mySites.site.push("a new site");
+		var inputValue = document.getElementById('new-site-input').value;
+		console.log("recovered text input: " + inputValue)
+		if(inputValue){
+			background.mySites.site.push(inputValue);
+			console.log("resolves as true");
+		}
+		document.getElementById('new-site-input').value = [];
+		document.getElementById('new-site-input').style.display = 'none';
 		renderDefault();
+		
 	} else if(state == "removing" && new_state == "remove"){
 		//remove an element from the sites array
 		var removed = background.mySites.site.splice(0,1);
