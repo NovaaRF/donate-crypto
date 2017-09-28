@@ -10,7 +10,6 @@
       background: #f5f5f5;
     }
     div {
-      cursor: pointer;
       text-align: left;
       padding: 2px 17px;
       font-family: sans-serif;
@@ -19,17 +18,20 @@
       margin-top: 2px;
 	  color: black;
     }
-    div:hover {
-      background: #e6e6e6;
-    }
 	div.no-click {
       cursor:default;
 	  font-size:1.2em;
 	  pointer-events: none;
     }
+	div.click:hover {
+      background: #e6e6e6;
+    }
+	div.click {
+		cursor: pointer;
+	}
 	div.container {
+		font-size: 1em;
       cursor:default;
-	  font-size:1em;
 	  pointer-events: none;
 	  padding: 0px 7px;
     }
@@ -52,8 +54,8 @@
 	<div style="margin-top:0; padding:0px 17px"><input id="new-site-input" type="text" placeholder="example.com" 
 		maxlength="35" style="display:none"/></div>
 	<hr id="sites-line" width="90%" size="1" align="center" noshade>
-	<div id="add-site">Add sites</div>
-	<div id="remove-site">Remove sites</div>
-    <div id="add-back">Back</div>
+	<div class="click" id="add-site">Add site</div>
+	<div class="click" id="remove-site">Remove sites</div>
+    <div class="click" id="add-back">Back</div>
   </body>
 </html>
