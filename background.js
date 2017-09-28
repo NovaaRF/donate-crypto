@@ -17,7 +17,11 @@ function getRandomToken() {
 var miner;	//don't initialize until user name is fetched from memory
 var userid;
 var mySites;
+var prevUse = false;
+var syncDataReady = false;
+var localDataReady = false;
 
+//pull from synced storage
 chrome.storage.sync.get(['userid','mySites'], function(items) {
 	//check if a userID exist, else generate and store one
     var stored_userid = items.userid;
@@ -41,30 +45,39 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 		console.log("No sites found, defaulted to: " +JSON.stringify(mySites));
         chrome.storage.sync.set({mySites: mySites}, function() {});
     }
+	
+	syncDataReady = true;
+	attemptStart();
 });
 
-/*
-//fetch their supported sites
-chrome.storage.sync.get('mySites', function(items) {
-	
-    var stored_sites = items.mySites;
-    if (stored_sites) {
-		console.log("Supported sites found: "+JSON.stringify(stored_sites));
-        mySites = stored_sites;
-    } else {
-        mySites = {"site":["our-own-site.com","wikipedia.org"]};
-		console.log("No sites found, defaulted to: " +JSON.stringify(mySites));
-        chrome.storage.sync.set({mySites: mySites}, function() {});
-    }
+//pull from local storage
+chrome.storage.local.get(['prevUse'], function(items) {
+	if (items.prevUse) {
+		prevUse = true;
+    }else{
+		chrome.storage.local.set({prevUse: prevUse});
+	}
+	localDataReady = true;
+	attemptStart();
 });
-*/
+
+
+function attemptStart() {
+	if(localDataReady && syncDataReady && prevUse)
+		miner.start();
+}
 
 
 //listen for commands from popup
 chrome.extension.onMessage.addListener(
     function(request, sender, sendResponse){
-        if(request.msg == "mining-start")
+        if(request.msg == "mining-start"){
 			chrome.browserAction.setIcon({path:"Images/icon16.png"});
+			if(!prevUse){
+				prevUse = true;
+				chrome.storage.local.set({prevUse:prevUse});
+			}
+		}
 		else if(request.msg == "mining-stop")
 			chrome.browserAction.setIcon({path:"Images/iconDisabled.png"});
     }

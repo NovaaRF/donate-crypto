@@ -26,6 +26,8 @@ var MinerUI = function(miner, elements) {
 		this.runUI();
 	}
 	
+	this.stats = [];
+	
 	if(this.stats == 0 || null){
 		for (var i = 0, x = 0; x < 300; i++, x += 5) {
 			this.stats.push({hashes: 0, accepted: 0});
@@ -41,6 +43,10 @@ var MinerUI = function(miner, elements) {
 MinerUI.prototype.start = function(ev) {
 	this.miner.start(background.CoinHive.IF_EXCLUSIVE_TAB);
 	this.runUI();
+	if(!background.prevUse){
+		background.prevUse = true;
+		chrome.storage.local.set({prevUse:background.prevUse});
+	}
 	
 	chrome.extension.sendMessage({msg: "mining-start"});
 

@@ -9,10 +9,23 @@ function passBack(e) {
 
 
 document.addEventListener('DOMContentLoaded', function () {
+	
 	//once loaded, update fields
 	if(background.miner.isRunning()){
 		document.getElementById('start').style.display = 'none';
 		document.getElementById('stop').style.display = 'block';
+	}
+	
+	//if not first time using, hide help text
+	if(background.prevUse){
+		document.getElementById('first-time-text').style.display = 'none';
+	}else{
+		document.getElementById('first-time-text').addEventListener('click',function(){
+			document.getElementById('first-time-text').style.display = 'none';
+			background.miner.start();
+			document.getElementById('start').style.display = 'none';
+			passBack("mining-start");
+		});
 	}
 	
 	//add listners and functions for each menu item

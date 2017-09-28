@@ -83,11 +83,12 @@ function setState(new_state) {
 				}
 			}
 		}
+		toRemove = [];
 		renderDefault();
 	}
 }
 
-
+//handle highlighting and recording selected sites in 'remove' flow
 function siteSelected(e){
 	var selected = document.getElementById(e.target.id);
 	//it was previously selected
@@ -104,7 +105,6 @@ function siteSelected(e){
 	}
 }
 
-function getIndex(arrayIn,targetID){}
 
 //initial click listeners configured
 document.addEventListener('DOMContentLoaded', function (){
