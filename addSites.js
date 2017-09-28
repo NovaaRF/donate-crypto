@@ -1,11 +1,11 @@
 var background = chrome.extension.getBackgroundPage();
 var state = "showing";
+var toRemove = [];
+var changed = false;
 
 
 //update and show the menu
 function renderDefault() {
-	console.log("Found " + background.mySites.site.length + " sites in storage");
-	console.log("Current sites: " + background.mySites.site);
 	
 	var siteList = document.getElementById('sites-list');
 	
@@ -26,6 +26,14 @@ function renderDefault() {
 	document.getElementById('remove-site').style.display = 'block';
 	document.getElementById('add-site').style.display = 'block';
 	state = "showing";
+	
+	//update synced storage
+	if(changed){
+		chrome.storage.sync.set({mySites: background.mySites}, function() {
+			console.log("Supported sites updated: " + JSON.stringify(background.mySites));
+		});
+		changed = false;
+	}
 }
 
 
@@ -56,9 +64,9 @@ function setState(new_state) {
 	} else if(state == "adding" && new_state == "add"){
 		//add a site to the list
 		var inputValue = document.getElementById('new-site-input').value;
-		console.log("recovered text input: " + inputValue)
 		if(inputValue){
 			background.mySites.site.push(inputValue);
+			changed = true;
 		}
 		document.getElementById('new-site-input').value = [];
 		document.getElementById('new-site-input').style.display = 'none';
@@ -66,12 +74,17 @@ function setState(new_state) {
 	
 	//commit removing a site
 	} else if(state == "removing" && new_state == "remove"){
-		//remove an element from the sites array
-		var removed = background.mySites.site.splice(0,1);
-		console.log("Removed the site: " + removed);
+		//find and remove all elements of toRemove from sites array
+		for(var i=0; i<background.mySites.site.length; i++){
+			for(var j=0; j<toRemove.length; j++){
+				if(document.getElementById(toRemove[j]).childNodes[0].nodeValue == background.mySites.site[i]){
+					background.mySites.site.splice(i,1);
+					changed = true;
+				}
+			}
+		}
 		renderDefault();
 	}
-	console.log("State is now: "+state);
 }
 
 
@@ -80,11 +93,18 @@ function siteSelected(e){
 	//it was previously selected
 	if(selected.style.background == 'rgb(190, 212, 232)'){
 		selected.style.background = '#f5f5f5';
+		//find and remove from array
+		for(var i=0; i<toRemove.length; i++){
+			if(toRemove[i] == e.target.id)
+				toRemove.splice(i,1);
+		}
 	}else{
 		selected.style.background = '#bed4e8';
-		console.log("The background is now " + selected.style.background);
+		toRemove.push(e.target.id);
 	}
 }
+
+function getIndex(arrayIn,targetID){}
 
 //initial click listeners configured
 document.addEventListener('DOMContentLoaded', function (){
