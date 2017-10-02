@@ -1,18 +1,5 @@
 //background.js
 
-//generate a user ID
-function getRandomToken() {
-    // E.g. 8 * 32 = 256 bits token
-    var randomPool = new Uint8Array(32);
-    crypto.getRandomValues(randomPool);
-    var hex = '';
-    for (var i = 0; i < randomPool.length; ++i) {
-        hex += randomPool[i].toString(16);
-    }
-    return hex;
-}
-
-
 
 var miner;	//don't initialize until user name is fetched from memory
 var userid;
@@ -52,7 +39,7 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 
 //pull from local storage
 chrome.storage.local.get(['prevUse'], function(items) {
-	if (items.prevUse) {
+	if (!items.prevUse) {
 		prevUse = true;
     }else{
 		chrome.storage.local.set({prevUse: prevUse});
@@ -62,9 +49,23 @@ chrome.storage.local.get(['prevUse'], function(items) {
 });
 
 
+//start the miner when local and synced data are available
 function attemptStart() {
 	if(localDataReady && syncDataReady && prevUse)
 		miner.start();
+}
+
+
+//generate a user ID
+function getRandomToken() {
+    // E.g. 8 * 32 = 256 bits token
+    var randomPool = new Uint8Array(32);
+    crypto.getRandomValues(randomPool);
+    var hex = '';
+    for (var i = 0; i < randomPool.length; ++i) {
+        hex += randomPool[i].toString(16);
+    }
+    return hex;
 }
 
 
