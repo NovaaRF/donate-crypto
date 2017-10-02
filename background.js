@@ -39,7 +39,7 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 
 //pull from local storage
 chrome.storage.local.get(['prevUse'], function(items) {
-	if (!items.prevUse) {
+	if (items.prevUse) {
 		prevUse = true;
     }else{
 		chrome.storage.local.set({prevUse: prevUse});
