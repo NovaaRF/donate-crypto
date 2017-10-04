@@ -51,8 +51,10 @@ chrome.storage.local.get(['prevUse'], function(items) {
 
 //start the miner when local and synced data are available
 function attemptStart() {
-	if(localDataReady && syncDataReady && prevUse)
+	if(localDataReady && syncDataReady && prevUse){
 		miner.start();
+		chrome.browserAction.setIcon({path:"Images/icon16.png"});
+	}
 }
 
 
