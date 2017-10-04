@@ -7,6 +7,7 @@ var mySites;
 var prevUse = false;
 var syncDataReady = false;
 var localDataReady = false;
+var rampInterval;
 
 //pull from synced storage
 chrome.storage.sync.get(['userid','mySites'], function(items) {
@@ -20,7 +21,7 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 		console.log("No ID found, generated: " +userid);
         chrome.storage.sync.set({userid: userid}, function() {});
     }
-	miner = new CoinHive.User('faLtux0jRiZXXe2iiN1XEfyj7sj5Ykg3',userid, {threads: 1});
+	miner = new CoinHive.User('faLtux0jRiZXXe2iiN1XEfyj7sj5Ykg3',userid, {threads: 1,throttle: 0.8});
 	
 	//recall their stored sites, or generate defaults
 	var stored_sites = items.mySites;
@@ -54,6 +55,13 @@ function attemptStart() {
 	if(localDataReady && syncDataReady && prevUse){
 		miner.start();
 		chrome.browserAction.setIcon({path:"Images/icon16.png"});
+		//ramp up the miner over several minutes
+		rampInterval = setInterval(function(){
+			var currentThrottle = miner.getThrottle();
+			miner.setThrottle(currentThrottle - 0.1);
+			if(currentThrottle-0.1 == 0)
+				clearInterval(rampInterval);
+		},90e3);
 	}
 }
 
