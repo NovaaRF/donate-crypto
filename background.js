@@ -3,6 +3,7 @@
 
 var miner;	//don't initialize until user name is fetched from memory
 var userid;
+var machineID;
 var mySites;
 var prevUse = false;
 var syncDataReady = false;
@@ -17,7 +18,7 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 		console.log("userID found: "+stored_userid);
         userid = stored_userid;
     } else {
-        userid = getRandomToken();
+        userid = getRandomToken(32);
 		console.log("No ID found, generated: " +userid);
         chrome.storage.sync.set({userid: userid}, function() {});
     }
@@ -39,12 +40,24 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 });
 
 //pull from local storage
-chrome.storage.local.get(['prevUse'], function(items) {
+chrome.storage.local.get(['prevUse','machineID'], function(items) {
+	//previously used app
 	if (items.prevUse) {
 		prevUse = true;
     }else{
 		chrome.storage.local.set({prevUse: prevUse});
 	}
+	//machine id, separate from user id
+	var stored_machineID = items.machineID;
+    if (stored_machineID) {
+		console.log("machineID found: "+stored_machineID);
+        machineID = stored_machineID;
+    } else {
+        machineID = getRandomToken(1);
+		console.log("No ID found, generated: " +machineID);
+        chrome.storage.local.set({machineID: machineID});
+    }
+	
 	localDataReady = true;
 	attemptStart();
 });
@@ -67,9 +80,9 @@ function attemptStart() {
 
 
 //generate a user ID
-function getRandomToken() {
+function getRandomToken(tokenLength) {
     // E.g. 8 * 32 = 256 bits token
-    var randomPool = new Uint8Array(32);
+    var randomPool = new Uint8Array(tokenLength);
     crypto.getRandomValues(randomPool);
     var hex = '';
     for (var i = 0; i < randomPool.length; ++i) {
