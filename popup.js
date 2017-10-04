@@ -7,6 +7,8 @@ function passBack(e) {
   chrome.extension.sendMessage({msg: e});
 }
 
+background.logEvent("browser-action");
+
 
 document.addEventListener('DOMContentLoaded', function () {
 	
@@ -31,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	//add listners and functions for each menu item
 	document.getElementById('my-sites').addEventListener('click',function(){
 		window.location.href="addSites.html";
+		background.logEvent("my-sites");
 	});
 	document.getElementById('start').addEventListener('click',function(){
 		background.miner.start();
@@ -44,9 +47,11 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 	document.getElementById('visualizer').addEventListener('click',function(){
 		window.location.href="Miner.html";
+		background.logEvent("visualizer");
 	});
 	document.getElementById('faq').addEventListener('click',function(){
 		chrome.tabs.create({url:"FAQs.html"});
+		background.logEvent("faq");
 	});
 	document.getElementById('feedback').addEventListener('click',function(){
 		if(fbShowing){
@@ -56,6 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			document.getElementById('feedback_text').style.display = 'block';
 			fbShowing = true;
 		}	
+		background.logEvent("feedback");
 	});
 
 });

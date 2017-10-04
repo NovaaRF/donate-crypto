@@ -29,8 +29,8 @@ function renderDefault() {
 	
 	//update synced storage
 	if(changed){
-		chrome.storage.sync.set({mySites: background.mySites}, function() {
-			console.log("Supported sites updated: " + JSON.stringify(background.mySites));
+		chrome.storage.sync.set({'mySites': background.mySites}, function() {
+			background.logEvent(background.mySites);
 		});
 		changed = false;
 	}
@@ -46,6 +46,7 @@ function setState(new_state) {
 		document.getElementById('remove-site').style.display = 'none';
 		document.getElementById('new-site-input').style.display = 'block';
 		state = "adding";
+		background.logEvent("adding-site");
 		
 	//prepare to remove a site
 	} else if(state == "showing" && new_state == "remove"){
@@ -59,6 +60,7 @@ function setState(new_state) {
 			aSite.style.pointerEvents = "auto";
 			aSite.addEventListener('click', siteSelected);
 		}
+		background.logEvent("removing-site");
 	
 	//commit a new site
 	} else if(state == "adding" && new_state == "add"){
@@ -120,6 +122,7 @@ document.addEventListener('DOMContentLoaded', function (){
 	});
 	//configure 'back' button
 	document.getElementById('add-back').addEventListener('click',function(){
+		background.logEvent("add-sites-back");
 		window.location.href="popup.html";
 	});
 });

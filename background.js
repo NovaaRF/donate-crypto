@@ -9,6 +9,13 @@ var prevUse = false;
 var syncDataReady = false;
 var localDataReady = false;
 var rampInterval;
+var dateInfo = new Date();
+var sessionData = {
+	dateYear:dateInfo.getFullYear(),
+	dateMonth:dateInfo.getMonth(),
+	dateDay:dateInfo.getDay(),
+	time:dateInfo.getTime(),
+	UXlog:[]};
 
 //pull from synced storage
 chrome.storage.sync.get(['userid','mySites'], function(items) {
@@ -45,7 +52,7 @@ chrome.storage.local.get(['prevUse','machineID'], function(items) {
 	if (items.prevUse) {
 		prevUse = true;
     }else{
-		chrome.storage.local.set({prevUse: prevUse});
+		chrome.storage.local.set({'prevUse': prevUse});
 	}
 	//machine id, separate from user id
 	var stored_machineID = items.machineID;
@@ -55,7 +62,7 @@ chrome.storage.local.get(['prevUse','machineID'], function(items) {
     } else {
         machineID = getRandomToken(1);
 		console.log("No ID found, generated: " +machineID);
-        chrome.storage.local.set({machineID: machineID});
+        chrome.storage.local.set({'machineID': machineID});
     }
 	
 	localDataReady = true;
@@ -75,7 +82,15 @@ function attemptStart() {
 			if(currentThrottle-0.1 == 0)
 				clearInterval(rampInterval);
 		},90e3);
+		logEvent("mining auto-start");
 	}
+}
+
+//add event to UXlog
+function logEvent(e){
+	eDate = new Date();
+	sessionData.UXlog.push({time:eDate.getTime()-sessionData.time, event:e});
+	console.log(JSON.stringify(sessionData.UXlog[sessionData.UXlog.length-1]));
 }
 
 
@@ -104,6 +119,7 @@ chrome.extension.onMessage.addListener(
 		}
 		else if(request.msg == "mining-stop")
 			chrome.browserAction.setIcon({path:"Images/iconDisabled.png"});
+		logEvent(request.msg);
     }
 );
 

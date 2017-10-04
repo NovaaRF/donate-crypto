@@ -134,6 +134,8 @@ MinerUI.prototype.updateStats = function() {
 };
 
 MinerUI.prototype.drawGraph = function() {
+	
+	this.elements.throttle.textContent = Math.round(this.miner.getThrottle()*100)+"%";
 
 	// Resize canvas if necessary
 	if (this.elements.canvas.offsetWidth !== this.elements.canvas.width) {
