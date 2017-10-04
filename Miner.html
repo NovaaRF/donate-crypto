@@ -28,6 +28,7 @@
 <body>
 
 <div id="viz_back" class="back">Back</div>
+<div id="viz_advanced" class="back">Advanced</div>
 
 <div class="container">
 
@@ -36,14 +37,18 @@
 	<div class="six columns stopped" id="miner">
 		<div class="row">
 			<div class="four columns">
-				<h4 class="number-label">Hashes/s</h4>
-				<h2 id="mining-hashes-per-second">0</h2>
+				<h4 class="number-label">Ops / s</h4>
+				<h3 id="mining-hashes-per-second">0</h3>
+			</div>
+			<div class="four columns">
+				<h4 class="number-label">Session</h4>
+				<h3 id="mining-hashes-total">0</h3>
 			</div>
 			<div class="four columns">
 				<h4 class="number-label">Total</h4>
-				<h2 id="mining-hashes-total">0</h2>
+				<h3 id="hashes-grand-total">0</h3>
 			</div>
-			<div class="four columns">
+			<div class="four columns" id="idle-box" style="display:none;">
 				<h4 class="number-label">Idle</h4>
 				<h3>
 					<span id="mining-throttle">0%</span>
@@ -52,7 +57,7 @@
 					<span id="mining-throttle-remove" class="action">-</span>
 				</h3>
 			</div>
-			<div class="four columns">
+			<div class="four columns" id="threads-box" style="display:none;">
 				<h4 class="number-label">Threads</h4>
 				<h3>
 					<span id="mining-threads">2</span>
@@ -65,14 +70,14 @@
 		<div id="mining-stats-container">
 			<canvas id="mining-stats-canvas" width="346" height="95"></canvas>
 			<div id="mining-controls">
-				<a href="https://coin-hive.com/#" class="mining-button" id="mining-start">
+				<a href="" class="mining-button" id="mining-start">
 					<svg class="mining-icon play-button" viewBox="0 0 200 200" alt="Start Mining">
 						<circle cx="100" cy="100" r="90" fill="none" stroke-width="15" class="mining-stroke"></circle>
 						<polygon points="70, 55 70, 145 145, 100" class="mining-fill"></polygon>
 					</svg>
 					Start
 				</a>
-				<a href="https://coin-hive.com/#" class="mining-button" id="mining-stop">
+				<a href="" class="mining-button" id="mining-stop">
 					<svg class="mining-icon pause-button" viewBox="0 0 200 200" alt="Pause">
 						<circle cx="100" cy="100" r="90" fill="none" stroke-width="15" class="mining-stroke"></circle>
 						<rect x="70" y="50" width="20" height="100" class="mining-fill"></rect>

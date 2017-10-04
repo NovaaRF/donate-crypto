@@ -23,4 +23,9 @@ document.addEventListener('DOMContentLoaded', function () {
 	document.getElementById('viz_back').addEventListener('click',function(){
 		window.location.href="popup.html";
 	});
+	document.getElementById('viz_advanced').addEventListener('click',function(){
+		document.getElementById('idle-box').style.display = 'block';
+		document.getElementById('threads-box').style.display = 'block';
+		document.getElementById('viz_advanced').style.display = 'none';
+	});
 });
