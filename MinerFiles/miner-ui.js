@@ -58,7 +58,7 @@ MinerUI.prototype.runUI = function() {
 	this.elements.container.classList.add('running');
 	this.elements.container.classList.remove('stopped');
 
-	this.intervalUpdateStats = setInterval(this.updateStats.bind(this), 50);
+	this.intervalUpdateStats = setInterval(this.updateStats.bind(this), 200);
 	this.intervalDrawGraph = setInterval(this.drawGraph.bind(this), 500);
 
 	this.elements.threads.textContent = this.miner.getNumThreads();
@@ -124,8 +124,9 @@ MinerUI.prototype.updateStats = function() {
 	this.elements.hashesPerSecond.textContent = this.miner.getHashesPerSecond().toFixed(1);
 	
 	//display abrevs.
-	var dispTotal = this.miner.getTotalHashes(true);
-	var grandTotal = dispTotal + background.prevTotal;
+	var runningTotal = this.miner.getTotalHashes(true);
+	var dispTotal = runningTotal + background.prevTotal;
+	var grandTotal = runningTotal + background.prevGrandTotal;
 	if(dispTotal > 1000000){
 		dispTotal = (dispTotal/1000000).toFixed(2) + "M";
 	} else if(dispTotal > 1000){

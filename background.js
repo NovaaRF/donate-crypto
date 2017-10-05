@@ -18,9 +18,12 @@ var sessionData = {
 	time:dateInfo.getTime(),
 	uptime:0,
 	hashes:0,
+	totalHashes:0,
+	lastUpdate:0,
 	UXlog:[]};
 var logUpdate = false;
 var prevTotal = 0;
+var prevGrandTotal = 0;
 
 //pull from synced storage
 chrome.storage.sync.get(['userid','mySites'], function(items) {
@@ -65,15 +68,21 @@ chrome.storage.local.get(['prevUse','machineID','sessionData'], function(items) 
 		console.log("machineID found: "+stored_machineID);
         machineID = stored_machineID;
     } else {
-        machineID = getRandomToken(1);
+        machineID = getRandomToken(2);
 		console.log("No ID found, generated: " +machineID);
         chrome.storage.local.set({'machineID': machineID});
     }
-	if(items.sessionData.hashes){
-		prevTotal = items.sessionData.hashes;
-		console.log("Found previous hashes: " + JSON.stringify(items.sessionData.hashes));
+	//preious session data
+	if(items.sessionData){
+		items.sessionData.UXlog.push({time:items.sessionData.lastUpdate, event:"session-close"});
+		prevGrandTotal = items.sessionData.totalHashes;
 	}
-	//console.log(JSON.stringify(items.sessionData));
+	if(compareDate(items.sessionData)){
+		prevTotal = items.sessionData.hashes;
+		sessionData = items.sessionData;
+		console.log("Found previous session today: " + JSON.stringify(items.sessionData.hashes));
+	}
+	//console.log(JSON.stringify(sessionData));
 	
 	localDataReady = true;
 	attemptStart();
@@ -94,19 +103,25 @@ function attemptStart() {
 			if(currentThrottle-0.1 == 0)
 				clearInterval(rampInterval);
 		},90e3);
+		//periodically update totals
 		logInterval = setInterval(function(){
 			if(logUpdate || miner.isRunning()){
-				sessionData.hashes = prevTotal+miner.getTotalHashes();
+				var currentHash = miner.getTotalHashes();
+				sessionData.hashes = prevTotal+currentHash;
+				sessionData.totalHashes = prevGrandTotal+currentHash;
+				var eDate = new Date();
+				sessionData.lastUpdate = eDate.getTime()-sessionData.time;
 				chrome.storage.local.set({'sessionData': sessionData});
-				logUpdate == false;
+				logUpdate = false;
 			}
 		},5e3);
 	}
 }
 
+
 //add event to UXlog
 function logEvent(e){
-	eDate = new Date();
+	var eDate = new Date();
 	sessionData.UXlog.push({time:eDate.getTime()-sessionData.time, event:e});
 	console.log(JSON.stringify(sessionData.UXlog[sessionData.UXlog.length-1]));
 	logUpdate = true;
@@ -123,6 +138,18 @@ function getRandomToken(tokenLength) {
         hex += randomPool[i].toString(16);
     }
     return hex;
+}
+
+
+//compare the dates of current and stored session data
+function compareDate(prevSession){
+	if(prevSession.dateDay == sessionData.dateDay
+		&& prevSession.dateMonth == sessionData.dateMonth
+		&& prevSession.dateYear == sessionData.dateYear){
+			return true;
+		}
+		else
+			return false;
 }
 
 
