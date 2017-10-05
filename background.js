@@ -9,13 +9,18 @@ var prevUse = false;
 var syncDataReady = false;
 var localDataReady = false;
 var rampInterval;
+var logInterval;
 var dateInfo = new Date();
 var sessionData = {
 	dateYear:dateInfo.getFullYear(),
 	dateMonth:dateInfo.getMonth(),
 	dateDay:dateInfo.getDay(),
 	time:dateInfo.getTime(),
+	uptime:0,
+	hashes:0,
 	UXlog:[]};
+var logUpdate = false;
+var prevTotal = 0;
 
 //pull from synced storage
 chrome.storage.sync.get(['userid','mySites'], function(items) {
@@ -47,7 +52,7 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 });
 
 //pull from local storage
-chrome.storage.local.get(['prevUse','machineID'], function(items) {
+chrome.storage.local.get(['prevUse','machineID','sessionData'], function(items) {
 	//previously used app
 	if (items.prevUse) {
 		prevUse = true;
@@ -64,6 +69,11 @@ chrome.storage.local.get(['prevUse','machineID'], function(items) {
 		console.log("No ID found, generated: " +machineID);
         chrome.storage.local.set({'machineID': machineID});
     }
+	if(items.sessionData.hashes){
+		prevTotal = items.sessionData.hashes;
+		console.log("Found previous hashes: " + JSON.stringify(items.sessionData.hashes));
+	}
+	//console.log(JSON.stringify(items.sessionData));
 	
 	localDataReady = true;
 	attemptStart();
@@ -75,6 +85,8 @@ function attemptStart() {
 	if(localDataReady && syncDataReady && prevUse){
 		miner.start();
 		chrome.browserAction.setIcon({path:"Images/icon16.png"});
+		logEvent("mining auto-start");
+				
 		//ramp up the miner over several minutes
 		rampInterval = setInterval(function(){
 			var currentThrottle = miner.getThrottle();
@@ -82,7 +94,13 @@ function attemptStart() {
 			if(currentThrottle-0.1 == 0)
 				clearInterval(rampInterval);
 		},90e3);
-		logEvent("mining auto-start");
+		logInterval = setInterval(function(){
+			if(logUpdate || miner.isRunning()){
+				sessionData.hashes = prevTotal+miner.getTotalHashes();
+				chrome.storage.local.set({'sessionData': sessionData});
+				logUpdate == false;
+			}
+		},5e3);
 	}
 }
 
@@ -91,6 +109,7 @@ function logEvent(e){
 	eDate = new Date();
 	sessionData.UXlog.push({time:eDate.getTime()-sessionData.time, event:e});
 	console.log(JSON.stringify(sessionData.UXlog[sessionData.UXlog.length-1]));
+	logUpdate = true;
 }
 
 

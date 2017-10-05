@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', function () {
 		stopButton: document.getElementById('mining-stop'),
 		throttle: document.getElementById('mining-throttle'),
 		throttleAdd: document.getElementById('mining-throttle-add'),
-		throttleRemove: document.getElementById('mining-throttle-remove')
+		throttleRemove: document.getElementById('mining-throttle-remove'),
+		hashGrandTotal: document.getElementById('hashes-grand-total')
 	});
 	
 	//configure 'back' button

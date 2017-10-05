@@ -125,12 +125,21 @@ MinerUI.prototype.updateStats = function() {
 	
 	//display abrevs.
 	var dispTotal = this.miner.getTotalHashes(true);
+	var grandTotal = dispTotal + background.prevTotal;
 	if(dispTotal > 1000000){
 		dispTotal = (dispTotal/1000000).toFixed(2) + "M";
 	} else if(dispTotal > 1000){
 		dispTotal = (dispTotal/1000).toFixed(2) + "k";
 	}
 	this.elements.hashesTotal.textContent = dispTotal;
+	
+	
+	if(grandTotal > 1000000){
+		grandTotal = (grandTotal/1000000).toFixed(2) + "M";
+	} else if(grandTotal > 1000){
+		grandTotal = (grandTotal/1000).toFixed(2) + "k";
+	}
+	this.elements.hashGrandTotal.textContent = grandTotal;
 };
 
 MinerUI.prototype.drawGraph = function() {
