@@ -1,6 +1,10 @@
 
 var background = chrome.extension.getBackgroundPage();
 
+//generic message pass to background
+function passBack(e) {
+  chrome.extension.sendMessage({msg: e});
+}
 	
 document.addEventListener('DOMContentLoaded', function () {
 	//instantiate the miner UI with links to the elements
@@ -20,13 +24,16 @@ document.addEventListener('DOMContentLoaded', function () {
 		hashGrandTotal: document.getElementById('hashes-grand-total')
 	});
 	
-	//configure 'back' button
+	//configure buttons
 	document.getElementById('viz_back').addEventListener('click',function(){
+		passBack("viz-back");
 		window.location.href="popup.html";
 	});
 	document.getElementById('viz_advanced').addEventListener('click',function(){
+		passBack("viz-advanced");
 		document.getElementById('idle-box').style.display = 'block';
 		document.getElementById('threads-box').style.display = 'block';
 		document.getElementById('viz_advanced').style.display = 'none';
 	});
+	
 });

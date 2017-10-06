@@ -1,3 +1,10 @@
+var background = chrome.extension.getBackgroundPage();
+
+//generic message pass to background
+function passBack(e) {
+  chrome.extension.sendMessage({msg: e});
+}
+
 var MinerUI = function(miner, elements) {
 	this.miner = miner;
 	this.elements = elements;
@@ -48,7 +55,7 @@ MinerUI.prototype.start = function(ev) {
 		chrome.storage.local.set({prevUse:background.prevUse});
 	}
 	
-	chrome.extension.sendMessage({msg: "mining-start"});
+	passBack("mining-start");
 
 	ev.preventDefault();
 	return false;
@@ -73,7 +80,7 @@ MinerUI.prototype.stop = function(ev) {
 	clearInterval(this.intervalUpdateStats);
 	clearInterval(this.intervalDrawGraph);
 	
-	chrome.extension.sendMessage({msg: "mining-stop"});
+	passBack("mining-stop");
 	
 	//display with k, M abreviations
 	var dispTotal = this.miner.getTotalHashes(true);
@@ -91,6 +98,7 @@ MinerUI.prototype.stop = function(ev) {
 MinerUI.prototype.addThread = function(ev) {
 	this.miner.setNumThreads(this.miner.getNumThreads() + 1);
 	this.elements.threads.textContent = this.miner.getNumThreads();
+	passBack("add-thread");
 
 	ev.preventDefault();
 	return false;
@@ -99,6 +107,7 @@ MinerUI.prototype.addThread = function(ev) {
 MinerUI.prototype.removeThread = function(ev) {
 	this.miner.setNumThreads(Math.max(0, this.miner.getNumThreads() - 1));
 	this.elements.threads.textContent = this.miner.getNumThreads();
+	passBack("remove-thread");
 
 	ev.preventDefault();
 	return false;
@@ -107,7 +116,9 @@ MinerUI.prototype.removeThread = function(ev) {
 MinerUI.prototype.removeThrottle = function(ev) {
 	this.miner.setThrottle(Math.max(0, this.miner.getThrottle() - 0.1));
 	this.elements.throttle.textContent = Math.round(this.miner.getThrottle()*100) + "%";
-
+	clearInterval(background.rampInterval);
+	passBack("remove-throttle");
+	
 	ev.preventDefault();
 	return false;
 };
@@ -115,6 +126,8 @@ MinerUI.prototype.removeThrottle = function(ev) {
 MinerUI.prototype.addThrottle = function(ev) {
 	this.miner.setThrottle(Math.min(0.9, this.miner.getThrottle() + 0.1));
 	this.elements.throttle.textContent = Math.round(this.miner.getThrottle()*100) + "%";
+	clearInterval(background.rampInterval);
+	passBack("add-throttle");
 
 	ev.preventDefault();
 	return false;
