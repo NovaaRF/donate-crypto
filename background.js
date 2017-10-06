@@ -101,9 +101,9 @@ function attemptStart() {
 		rampInterval = setInterval(function(){
 			var currentThrottle = miner.getThrottle();
 			miner.setThrottle(currentThrottle - 0.1);
-			if(currentThrottle-0.1 < 0.09){
+			if(currentThrottle-0.1 < 0.29){
 				clearInterval(rampInterval);
-				console.log("rampInterval cleared, at steady state throttle");
+				console.log("rampInterval cleared, steady state throttle reached");
 			}
 		},90e3);
 		//periodically update totals
@@ -113,7 +113,8 @@ function attemptStart() {
 				sessionData.hashes = prevTotal+currentHash;
 				sessionData.totalHashes = prevGrandTotal+currentHash;
 				var eDate = new Date();
-				sessionData.lastUpdate = eDate.getTime()-sessionData.time;
+				if(miner.isRunning())
+					sessionData.lastUpdate = eDate.getTime()-sessionData.time;
 				chrome.storage.local.set({'sessionData': sessionData});
 				logUpdate = false;
 			}
