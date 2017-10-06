@@ -123,6 +123,7 @@ document.addEventListener('DOMContentLoaded', function (){
 	//configure 'back' button
 	document.getElementById('add-back').addEventListener('click',function(){
 		background.logEvent("add-sites-back");
+		background.isBrowserAction = false;
 		window.location.href="popup.html";
 	});
 });

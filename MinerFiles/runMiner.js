@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	//configure buttons
 	document.getElementById('viz_back').addEventListener('click',function(){
 		passBack("viz-back");
+		background.isBrowserAction = false;
 		window.location.href="popup.html";
 	});
 	document.getElementById('viz_advanced').addEventListener('click',function(){

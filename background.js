@@ -10,6 +10,7 @@ var syncDataReady = false;
 var localDataReady = false;
 var rampInterval;
 var logInterval;
+var isBrowserAction = true;
 var dateInfo = new Date();
 var sessionData = {
 	dateYear:dateInfo.getFullYear(),
@@ -69,7 +70,7 @@ chrome.storage.local.get(['prevUse','machineID','sessionData'], function(items) 
         machineID = stored_machineID;
     } else {
         machineID = getRandomToken(2);
-		console.log("No ID found, generated: " +machineID);
+		console.log("No machine ID found, generated: " +machineID);
         chrome.storage.local.set({'machineID': machineID});
     }
 	//preious session data

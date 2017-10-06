@@ -7,8 +7,10 @@ function passBack(e) {
   chrome.extension.sendMessage({msg: e});
 }
 
-background.logEvent("browser-action");
-
+if(background.isBrowserAction)
+	background.logEvent("browser-action");
+else
+	background.isBrowserAction = true;
 
 document.addEventListener('DOMContentLoaded', function () {
 	
