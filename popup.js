@@ -1,6 +1,7 @@
 
 var background = chrome.extension.getBackgroundPage();
 var fbShowing = false;
+var hideShowing = false;
 
 //generic message pass to background
 function passBack(e) {
@@ -64,6 +65,16 @@ document.addEventListener('DOMContentLoaded', function () {
 			fbShowing = true;
 		}	
 		background.logEvent("feedback");
+	});
+	document.getElementById('hide').addEventListener('click',function(){
+		if(hideShowing){
+			document.getElementById('hide-button_text').style.display = 'none';
+			hideShowing = false;
+		}else{
+			document.getElementById('hide-button_text').style.display = 'block';
+			hideShowing = true;
+		}	
+		background.logEvent("hide-button");
 	});
 
 });
