@@ -9,6 +9,7 @@
       margin: 0px;
       padding: 10px 1px;
       background: #fcfcfc;
+	  width: 204px;
     }
     div {
       cursor: pointer;
@@ -16,7 +17,6 @@
       padding: 2px 17px;
       font-family: sans-serif;
       font-size: 1.2em;
-      width: 170px;
       margin-top: 2px;
 	  color: black;
     }
@@ -28,11 +28,17 @@
 	  font-size:1em;
 	  pointer-events: none;
     }div.no-click:hover {background: #fcfcfc;}
-	span.bold {
-		margin-bottom: 1em;
-		margin-top: 0;
-		font-size: 1.2em;
-		font-weight: bold;
+	div.container {
+	  font-size: 0.9em;
+      cursor:default;
+	  pointer-events: none;
+	  padding: 0px 0px;
+    }
+	div.box {
+		padding-bottom: 10px;
+		padding-left: 0px;
+		font-size: 1em;
+		pointer-events: none;
 	}
 	a {pointer-events: auto;
 		cursor: pointer;}
@@ -46,6 +52,10 @@
 		Welcome! Pick the sites you want to support below.
 		<span style="float: right;"><a href="">Got it!</a></span>
 	</div>
+	<div class="box">
+		<div class="no-click" style="font-weight: bold;">Supporting:</div>
+		<div id="sites-list" class="container"></div>
+	</div>
 	<div id="my-sites">Add/Remove Sites</div>
     <div id="start">Resume Collectiv</div>
     <div id="stop" style="display:none">Pause Collectiv</div>
@@ -54,9 +64,9 @@
 	<div id="feedback">Feedback</div>
 	<div id="feedback_text" class="no-click" style="display:none;">
 		Get in touch with us at:<br>
-		<a href="mailto:ThisApp@gmail.com">ThisApp@gmail.com</a></div>
+		<a href="mailto:GetCollective@gmail.com">GetCollectiv@gmail.com</a></div>
 	<div id="hide">Hide this button</div>
 	<div id="hide-button_text" class="no-click" style="display:none;">
-		To hide, right-click the browser icon and select "Hide in Chrome menu"</div>
+		To hide, right-click browser icon and select "Hide in Chrome menu"</div>
   </body>
 </html>

@@ -8,6 +8,20 @@ function passBack(e) {
   chrome.extension.sendMessage({msg: e});
 }
 
+//dynamically render current supported sites
+function renderSites(){
+	var siteList = document.getElementById('sites-list');
+	//create and add <div> item for each site in array
+	for(var i = 0; i < background.mySites.site.length; i++){
+		var newItem = document.createElement("div");
+		var textnode = document.createTextNode('\u2022  ' + background.mySites.site[i]);
+		newItem.appendChild(textnode);
+		newItem.setAttribute("id","site-" + i);
+		siteList.appendChild(newItem);
+	}
+}
+
+
 if(background.isBrowserAction)
 	background.logEvent("browser-action");
 else
@@ -32,6 +46,8 @@ document.addEventListener('DOMContentLoaded', function () {
 			passBack("mining-start");
 		});
 	}
+	
+	renderSites();
 	
 	//add listners and functions for each menu item
 	document.getElementById('my-sites').addEventListener('click',function(){
