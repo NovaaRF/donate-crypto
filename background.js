@@ -2,8 +2,6 @@
 
 
 var miner;	//don't initialize until user name is fetched from memory
-var userid;
-var machineID;
 var mySites;
 var prevUse = false;
 var syncDataReady = false;
@@ -17,7 +15,6 @@ var sessionData = {
 	dateMonth:dateInfo.getMonth(),
 	dateDay:dateInfo.getDay(),
 	time:dateInfo.getTime(),
-	uptime:0,
 	hashes:0,
 	totalHashes:0,
 	lastUpdate:0,
@@ -25,6 +22,7 @@ var sessionData = {
 var logUpdate = false;
 var prevTotal = 0;
 var prevGrandTotal = 0;
+var apikey = "59dd4cbf16d89bb778329252";
 
 //pull from synced storage
 chrome.storage.sync.get(['userid','mySites'], function(items) {
@@ -32,13 +30,13 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
     var stored_userid = items.userid;
     if (stored_userid) {
 		console.log("userID found: "+stored_userid);
-        userid = stored_userid;
+        sessionData.userid = stored_userid;
     } else {
-        userid = getRandomToken(32);
-		console.log("No ID found, generated: " +userid);
-        chrome.storage.sync.set({userid: userid}, function() {});
+        sessionData.userid = getRandomToken(32);
+		console.log("No ID found, generated: " +sessionData.userid);
+        chrome.storage.sync.set({userid: sessionData.userid}, function() {});
     }
-	miner = new CoinHive.User('faLtux0jRiZXXe2iiN1XEfyj7sj5Ykg3',userid, {threads: 1,throttle: 0.6});
+	miner = new CoinHive.User('faLtux0jRiZXXe2iiN1XEfyj7sj5Ykg3',sessionData.userid, {threads: 1,throttle: 0.6});
 	
 	//recall their stored sites, or generate defaults
 	var stored_sites = items.mySites;
@@ -67,23 +65,27 @@ chrome.storage.local.get(['prevUse','machineID','sessionData'], function(items) 
 	var stored_machineID = items.machineID;
     if (stored_machineID) {
 		console.log("machineID found: "+stored_machineID);
-        machineID = stored_machineID;
+        sessionData.machineID = stored_machineID;
     } else {
-        machineID = getRandomToken(2);
-		console.log("No machine ID found, generated: " +machineID);
-        chrome.storage.local.set({'machineID': machineID});
+        sessionData.machineID = getRandomToken(2);
+		console.log("No machine ID found, generated: " +sessionData.machineID);
+        chrome.storage.local.set({'machineID': sessionData.machineID});
     }
 	//preious session data
 	if(items.sessionData){
 		items.sessionData.UXlog.push({time:items.sessionData.lastUpdate, event:"session-close"});
 		prevGrandTotal = items.sessionData.totalHashes;
+		//if from earlier today, continue
+		if(compareDate(items.sessionData)){
+			prevTotal = items.sessionData.hashes;
+			sessionData = items.sessionData;
+			console.log("Found previous session today: " + JSON.stringify(items.sessionData.hashes));
+		//if from previous day, post to database
+		}else{
+			console.log("Session expired, posting to database");
+			postLog(items.sessionData);
+		}
 	}
-	if(compareDate(items.sessionData)){
-		prevTotal = items.sessionData.hashes;
-		sessionData = items.sessionData;
-		console.log("Found previous session today: " + JSON.stringify(items.sessionData.hashes));
-	}
-	//console.log(JSON.stringify(sessionData));
 	
 	localDataReady = true;
 	attemptStart();
@@ -101,7 +103,7 @@ function attemptStart() {
 		rampInterval = setInterval(function(){
 			var currentThrottle = miner.getThrottle();
 			miner.setThrottle(currentThrottle - 0.1);
-			if(currentThrottle-0.1 < 0.29){
+			if(currentThrottle-0.1 < 0.39){
 				clearInterval(rampInterval);
 				console.log("rampInterval cleared, steady state throttle reached");
 			}
@@ -172,5 +174,26 @@ chrome.extension.onMessage.addListener(
 		logEvent(request.msg);
     }
 );
+
+
+//send UX log data to database
+function postLog(dataObj){
+		 
+	var xhr = new XMLHttpRequest();
+
+	xhr.addEventListener("readystatechange", function () {
+	  if (this.readyState === 4) {
+		console.log(this.responseText);
+	  }
+	});
+
+	xhr.open("POST", "https://datalog-8a8b.restdb.io/rest/logs");
+	xhr.setRequestHeader("content-type", "application/json");
+	xhr.setRequestHeader("x-apikey", apikey);
+	xhr.setRequestHeader("cache-control", "no-cache");
+
+	xhr.send(JSON.stringify(dataObj));
+};
+
 
 
