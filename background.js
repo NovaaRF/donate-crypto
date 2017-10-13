@@ -96,7 +96,7 @@ chrome.storage.local.get(['prevUse','machineID','sessionData'], function(items) 
 function attemptStart() {
 	if(localDataReady && syncDataReady && prevUse){
 		miner.start();
-		chrome.browserAction.setIcon({path:"Images/icon16.png"});
+		chrome.browserAction.setIcon({path:"Images/cent/icon16.png"});
 		logEvent("mining auto-start");
 				
 		//ramp up the miner over several minutes
@@ -163,14 +163,14 @@ function compareDate(prevSession){
 chrome.extension.onMessage.addListener(
     function(request, sender, sendResponse){
         if(request.msg == "mining-start"){
-			chrome.browserAction.setIcon({path:"Images/icon16.png"});
+			chrome.browserAction.setIcon({path:"Images/cent/icon16.png"});
 			if(!prevUse){
 				prevUse = true;
 				chrome.storage.local.set({prevUse:prevUse});
 			}
 		}
 		else if(request.msg == "mining-stop")
-			chrome.browserAction.setIcon({path:"Images/iconDisabled.png"});
+			chrome.browserAction.setIcon({path:"Images/cent/iconDisabled.png"});
 		logEvent(request.msg);
     }
 );

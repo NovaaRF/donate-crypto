@@ -1,16 +1,16 @@
 {
 	"manifest_version": 2,
 	"name": "Collectiv",
-	"version": "0.1.1",
+	"version": "0.2.0",
   
 	"description": "Support the websites and content creators you love, by donating some of your computer's unused processing power!",
-	"icons": {"16": "Images/icon16.png",
-			"48": "Images/icon48.png",
-			"128": "Images/icon128.png"},
+	"icons": {"16": "Images/cent/icon16.png",
+			"48": "Images/cent/icon48.png",
+			"128": "Images/cent/icon128.png"},
 			
 	"background": {"page": "background.html"},
 	"browser_action": {
-		"default_icon": "Images/icon16.png",
+		"default_icon": "Images/cent/icon16.png",
 		"default_popup": "popup.html"
 		},
 	"permissions": ["storage"],
