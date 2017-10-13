@@ -1,7 +1,7 @@
 var background = chrome.extension.getBackgroundPage();
 var state = "showing";
 var toRemove = [];
-var changed = false;
+var sitesChanged = false;
 
 
 //update and show the menu
@@ -28,11 +28,12 @@ function renderDefault() {
 	state = "showing";
 	
 	//update synced storage
-	if(changed){
+	if(sitesChanged){
+		background.sessionData.supported_sites = background.mySites;
 		chrome.storage.sync.set({'mySites': background.mySites}, function() {
 			background.logEvent(background.mySites);
 		});
-		changed = false;
+		sitesChanged = false;
 	}
 }
 
@@ -68,7 +69,7 @@ function setState(new_state) {
 		var inputValue = document.getElementById('new-site-input').value;
 		if(inputValue){
 			background.mySites.site.push(inputValue);
-			changed = true;
+			sitesChanged = true;
 		}
 		document.getElementById('new-site-input').value = [];
 		document.getElementById('new-site-input').style.display = 'none';
@@ -81,7 +82,7 @@ function setState(new_state) {
 			for(var j=0; j<toRemove.length; j++){
 				if(document.getElementById(toRemove[j]).childNodes[0].nodeValue == background.mySites.site[i]){
 					background.mySites.site.splice(i,1);
-					changed = true;
+					sitesChanged = true;
 				}
 			}
 		}

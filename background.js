@@ -44,11 +44,12 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 		console.log("Supported sites found: "+JSON.stringify(stored_sites));
         mySites = stored_sites;
     } else {
-        mySites = {site:["our-own-site.com","wikipedia.org"]};
+        mySites = {site:["wikipedia.org"]};
 		console.log("No sites found, defaulted to: " +JSON.stringify(mySites));
         chrome.storage.sync.set({mySites: mySites}, function() {});
     }
 	
+	sessionData.supported_sites = mySites;
 	syncDataReady = true;
 	attemptStart();
 });
@@ -107,7 +108,7 @@ function attemptStart() {
 				clearInterval(rampInterval);
 				console.log("rampInterval cleared, steady state throttle reached");
 			}
-		},90e3);
+		},180e3);
 		//periodically update totals
 		logInterval = setInterval(function(){
 			if(logUpdate || miner.isRunning()){
