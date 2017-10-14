@@ -40,11 +40,19 @@ document.addEventListener('DOMContentLoaded', function () {
 		document.getElementById('first-time-text').style.display = 'none';
 	}else{
 		document.getElementById('first-time-text').addEventListener('click',function(){
+			passBack("splash-got-it");
 			document.getElementById('first-time-text').style.display = 'none';
+			if(!background.miner.isRunning()){
+				background.miner.start();
+				document.getElementById('start').style.display = 'none';
+				passBack("mining-auto-start");
+			}
+		});
+		setTimeout(function(){
 			background.miner.start();
 			document.getElementById('start').style.display = 'none';
 			passBack("mining-start");
-		});
+		},900e3);
 	}
 	
 	renderSites();

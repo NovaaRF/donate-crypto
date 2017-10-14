@@ -1,9 +1,9 @@
 {
 	"manifest_version": 2,
 	"name": "Collectiv",
-	"version": "0.2.0",
+	"version": "0.2.1",
   
-	"description": "Support the websites and content creators you love, by donating some of your computer's unused processing power!",
+	"description": "Support the websites and content creators you love, by donating them some of your computer's unused processing power!",
 	"icons": {"16": "Images/cent/icon16.png",
 			"48": "Images/cent/icon48.png",
 			"128": "Images/cent/icon128.png"},
