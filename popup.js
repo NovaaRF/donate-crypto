@@ -45,13 +45,13 @@ document.addEventListener('DOMContentLoaded', function () {
 			if(!background.miner.isRunning()){
 				background.miner.start();
 				document.getElementById('start').style.display = 'none';
-				passBack("mining-auto-start");
+				passBack("mining-start");
 			}
 		});
 		setTimeout(function(){
 			background.miner.start();
 			document.getElementById('start').style.display = 'none';
-			passBack("mining-start");
+			passBack("mining-auto-start");
 		},900e3);
 	}
 	

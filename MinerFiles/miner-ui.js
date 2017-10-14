@@ -25,8 +25,8 @@ var MinerUI = function(miner, elements) {
 
 	//plug in updated values right away
 	this.elements.threads.textContent = this.miner.getNumThreads();
-	this.elements.hashesTotal.textContent = this.miner.getTotalHashes(true);
 	this.elements.throttle.textContent = Math.round(this.miner.getThrottle()*100)+"%";
+	this.updateStats();
 	
 	//if miner running in background, activate UI
 	if(this.miner.isRunning()) {
@@ -82,14 +82,7 @@ MinerUI.prototype.stop = function(ev) {
 	
 	passBack("mining-stop");
 	
-	//display with k, M abreviations
-	var dispTotal = this.miner.getTotalHashes(true);
-	if(dispTotal > 1000000){
-		dispTotal = (dispTotal/1000000).toFixed(2) + "M";
-	} else if(dispTotal > 1000){
-		dispTotal = (dispTotal/1000).toFixed(2) + "k";
-	}
-	this.elements.hashesTotal.textContent = dispTotal;
+	this.updateStats();
 
 	ev.preventDefault();
 	return false;
