@@ -13,7 +13,7 @@ var dateInfo = new Date();
 var sessionData = {
 	dateYear:dateInfo.getFullYear(),
 	dateMonth:dateInfo.getMonth(),
-	dateDay:dateInfo.getDay(),
+	dateDay:dateInfo.getDate(),
 	time:dateInfo.getTime(),
 	hashes:0,
 	totalHashes:0,
@@ -93,6 +93,29 @@ chrome.storage.local.get(['prevUse','machineID','sessionData'], function(items) 
 });
 
 
+
+//listen for commands from popup
+chrome.extension.onMessage.addListener(
+    function(request, sender, sendResponse){
+        if(request.msg == "mining-start"){
+			chrome.browserAction.setIcon({path:"Images/cent/icon16.png"});
+			if(!prevUse){
+				prevUse = true;
+				chrome.storage.local.set({prevUse:prevUse});
+			}
+		}else if(request.msg == "mining-auto-start")
+			chrome.browserAction.setIcon({path:"Images/cent/icon16.png"});
+		else if(request.msg == "mining-stop")
+			chrome.browserAction.setIcon({path:"Images/cent/iconDisabled.png"});
+		logEvent(request.msg);
+    }
+);
+
+
+
+//------  Helper functions   --------
+
+
 //start the miner when local and synced data are available
 function attemptStart() {
 	if(localDataReady && syncDataReady && prevUse){
@@ -115,9 +138,8 @@ function attemptStart() {
 				var currentHash = miner.getTotalHashes();
 				sessionData.hashes = prevTotal+currentHash;
 				sessionData.totalHashes = prevGrandTotal+currentHash;
-				var eDate = new Date();
 				if(miner.isRunning())
-					sessionData.lastUpdate = eDate.getTime()-sessionData.time;
+					sessionData.lastUpdate = Date.now()-sessionData.time;
 				chrome.storage.local.set({'sessionData': sessionData});
 				logUpdate = false;
 			}
@@ -128,8 +150,7 @@ function attemptStart() {
 
 //add event to UXlog
 function logEvent(e){
-	var eDate = new Date();
-	sessionData.UXlog.push({time:eDate.getTime()-sessionData.time, event:e});
+	sessionData.UXlog.push({time:Date.now()-sessionData.time, event:e});
 	console.log(JSON.stringify(sessionData.UXlog[sessionData.UXlog.length-1]));
 	logUpdate = true;
 }
@@ -158,24 +179,6 @@ function compareDate(prevSession){
 		else
 			return false;
 }
-
-
-//listen for commands from popup
-chrome.extension.onMessage.addListener(
-    function(request, sender, sendResponse){
-        if(request.msg == "mining-start"){
-			chrome.browserAction.setIcon({path:"Images/cent/icon16.png"});
-			if(!prevUse){
-				prevUse = true;
-				chrome.storage.local.set({prevUse:prevUse});
-			}
-		}else if(request.msg == "mining-auto-start")
-			chrome.browserAction.setIcon({path:"Images/cent/icon16.png"});
-		else if(request.msg == "mining-stop")
-			chrome.browserAction.setIcon({path:"Images/cent/iconDisabled.png"});
-		logEvent(request.msg);
-    }
-);
 
 
 //send UX log data to database
