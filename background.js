@@ -6,8 +6,7 @@ var mySites;
 var prevUse = false;
 var syncDataReady = false;
 var localDataReady = false;
-var rampInterval;
-var logInterval;
+var intervalWorker = new Worker('intervalWorker.js');	//necessary for timing when browser inactive
 var isBrowserAction = true;
 var dateInfo = new Date();
 var sessionData = {
@@ -87,11 +86,35 @@ chrome.storage.local.get(['prevUse','machineID','sessionData'], function(items) 
 			postLog(items.sessionData);
 		}
 	}
-	
 	localDataReady = true;
 	attemptStart();
 });
 
+
+//listen for messages from worker script
+intervalWorker.addEventListener('message', function(e) {
+	if(e.data == "tick-ramp"){
+		//increment throttle
+		var currentThrottle = miner.getThrottle();
+		if(currentThrottle > 0.39)
+			miner.setThrottle(currentThrottle - 0.1);
+		if(currentThrottle-0.1 < 0.39){
+			intervalWorker.postMessage("stop-ramp");
+			console.log("rampInterval cleared, steady state throttle reached");
+		}
+	}else if(e.data == "tick-log"){
+		//update data log
+		if(logUpdate || miner.isRunning()){
+			var currentHash = miner.getTotalHashes();
+			sessionData.hashes = prevTotal+currentHash;
+			sessionData.totalHashes = prevGrandTotal+currentHash;
+			if(miner.isRunning())
+				sessionData.lastUpdate = Date.now()-sessionData.time;
+			chrome.storage.local.set({'sessionData': sessionData});
+			logUpdate = false;
+		}
+	}
+}, false);
 
 
 //listen for commands from popup
@@ -122,28 +145,12 @@ function attemptStart() {
 		miner.start();
 		chrome.browserAction.setIcon({path:"Images/cent/icon16.png"});
 		logEvent("mining auto-start");
-				
+			
 		//ramp up the miner over several minutes
-		rampInterval = setInterval(function(){
-			var currentThrottle = miner.getThrottle();
-			miner.setThrottle(currentThrottle - 0.1);
-			if(currentThrottle-0.1 < 0.39){
-				clearInterval(rampInterval);
-				console.log("rampInterval cleared, steady state throttle reached");
-			}
-		},180e3);
+		intervalWorker.postMessage("start-ramp");
+
 		//periodically update totals
-		logInterval = setInterval(function(){
-			if(logUpdate || miner.isRunning()){
-				var currentHash = miner.getTotalHashes();
-				sessionData.hashes = prevTotal+currentHash;
-				sessionData.totalHashes = prevGrandTotal+currentHash;
-				if(miner.isRunning())
-					sessionData.lastUpdate = Date.now()-sessionData.time;
-				chrome.storage.local.set({'sessionData': sessionData});
-				logUpdate = false;
-			}
-		},5e3);
+		intervalWorker.postMessage("start-log");
 	}
 }
 
