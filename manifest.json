@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Collectiv",
-	"version": "0.2.1",
+	"version": "0.2.2",
   
 	"description": "Support the websites and content creators you love, by donating them some of your computer's unused processing power!",
 	"icons": {"16": "Images/cent/icon16.png",
@@ -14,5 +14,5 @@
 		"default_popup": "popup.html"
 		},
 	"permissions": ["storage"],
-	"content_security_policy": "script-src 'self' https://coinhive.com; object-src 'self'"
+	"content_security_policy": "script-src 'self' https://coinhive.com https://*.coinhive.com; object-src 'self'"
 }
