@@ -6,7 +6,7 @@ var mySites;
 var prevUse = false;
 var syncDataReady = false;
 var localDataReady = false;
-var intervalWorker = new Worker('intervalWorker.js');	//necessary for timing when browser inactive
+var intervalWorker = new Worker('js/intervalWorker.js');	//necessary for timing when browser inactive
 var isBrowserAction = true;
 var dateInfo = new Date();
 var sessionData = {
