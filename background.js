@@ -35,7 +35,6 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 		console.log("No ID found, generated: " +sessionData.userid);
         chrome.storage.sync.set({userid: sessionData.userid}, function() {});
     }
-	miner = new CoinHive.User('faLtux0jRiZXXe2iiN1XEfyj7sj5Ykg3',sessionData.userid, {threads: 1,throttle: 0.7});
 	
 	//recall their stored sites, or generate defaults
 	var stored_sites = items.mySites;
@@ -130,6 +129,10 @@ chrome.extension.onMessage.addListener(
 			chrome.browserAction.setIcon({path:"Images/cent/icon16.png"});
 		else if(request.msg == "mining-stop")
 			chrome.browserAction.setIcon({path:"Images/cent/iconDisabled.png"});
+		else if(request.mag == "splash-got-it" && !prevUse){
+			prevUse = true;
+			chrome.storage.local.set({prevUse:prevUse});
+		}
 		logEvent(request.msg);
     }
 );
@@ -141,6 +144,11 @@ chrome.extension.onMessage.addListener(
 
 //start the miner when local and synced data are available
 function attemptStart() {
+	if(localDataReady && syncDataReady){
+		miner = new CoinHive.User('faLtux0jRiZXXe2iiN1XEfyj7sj5Ykg3',sessionData.userid, {threads: 1,throttle: 0.7});
+		logEvent("initialize miner");
+	}
+	
 	if(localDataReady && syncDataReady && prevUse){
 		miner.start();
 		chrome.browserAction.setIcon({path:"Images/cent/icon16.png"});
