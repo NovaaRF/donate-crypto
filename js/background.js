@@ -151,7 +151,7 @@ function attemptStart() {
 		if(prevUse){
 			miner.start();
 			chrome.browserAction.setIcon({path:"Images/cent/icon16.png"});
-			logEvent("mining auto-start");
+			logEvent("mining-auto-start");
 				
 			//ramp up the miner over several minutes
 			intervalWorker.postMessage("start-ramp");
@@ -162,7 +162,7 @@ function attemptStart() {
 			setTimeout(function(){
 				if(!prevUse){	//in case they started and stopped the miner since timer start
 					miner.start();
-					logEvent("mining-auto-start");
+					logEvent("mining-timeout-start");
 				}
 			},900e3);
 		}
