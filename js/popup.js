@@ -29,16 +29,15 @@ else
 
 document.addEventListener('DOMContentLoaded', function () {
 	
-	
+	//once loaded, update fields
+	if(background.miner.isRunning()){
+		document.getElementById('start').style.display = 'none';
+		document.getElementById('stop').style.display = 'block';
+	}
 	
 	//if not first time using, hide help text
 	if(background.prevUse){
 		document.getElementById('first-time-text').style.display = 'none';
-		//once loaded, update fields
-		if(background.miner.isRunning()){
-			document.getElementById('start').style.display = 'none';
-			document.getElementById('stop').style.display = 'block';
-		}
 	}else{
 		document.getElementById('first-time-text').addEventListener('click',function(){
 			passBack("splash-got-it");
@@ -50,12 +49,6 @@ document.addEventListener('DOMContentLoaded', function () {
 				passBack("mining-start");
 			}
 		});
-		setTimeout(function(){
-			background.miner.start();
-			document.getElementById('start').style.display = 'none';
-			document.getElementById('stop').style.display = 'block';
-			passBack("mining-auto-start");
-		},900e3);
 	}
 	
 	renderSites();

