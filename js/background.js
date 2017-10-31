@@ -107,6 +107,7 @@ intervalWorker.addEventListener('message', function(e) {
 		//update data log
 		if(logUpdate || miner.isRunning()){
 			var currentHash = miner.getTotalHashes();
+			//detect reset in totals
 			if(currentHash < sessionData.hashes-prevTotal){
 				prevTotal = sessionData.hashes;
 				prevGrandTotal = sessionData.totalHashes;
@@ -118,6 +119,9 @@ intervalWorker.addEventListener('message', function(e) {
 				sessionData.lastUpdate = Date.now()-sessionData.time;
 			chrome.storage.local.set({'sessionData': sessionData});
 			logUpdate = false;
+			//if session has been up for 24h, reset to post logs
+			if(Date.now()-sessionData.time > 24*3600*1000)
+				window.location.reload();
 		}
 	}
 }, false);
