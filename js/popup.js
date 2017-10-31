@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			passBack("splash-got-it");
 			document.getElementById('first-time-text').style.display = 'none';
 			if(!background.miner.isRunning()){
+				background.explicitStart = true;
 				background.miner.start();
 				document.getElementById('start').style.display = 'none';
 				document.getElementById('stop').style.display = 'block';
@@ -59,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		background.logEvent("my-sites");
 	});
 	document.getElementById('start').addEventListener('click',function(){
+		background.explicitStart = true;
 		background.miner.start();
 		passBack("mining-start");
 		window.close();

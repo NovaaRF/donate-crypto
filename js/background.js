@@ -22,6 +22,7 @@ var logUpdate = false;
 var prevTotal = 0;
 var prevGrandTotal = 0;
 var apikey = "59dd4cbf16d89bb778329252";
+var explicitStart = false;
 
 //pull from synced storage
 chrome.storage.sync.get(['userid','mySites'], function(items) {
@@ -105,6 +106,11 @@ intervalWorker.addEventListener('message', function(e) {
 		//update data log
 		if(logUpdate || miner.isRunning()){
 			var currentHash = miner.getTotalHashes();
+			if(currentHash < sessionData.hashes-prevTotal){
+				prevTotal = sessionData.hashes;
+				prevGrandTotal = sessionData.totalHashes;
+				console.log("detected reset in hash count");
+			}
 			sessionData.hashes = prevTotal+currentHash;
 			sessionData.totalHashes = prevGrandTotal+currentHash;
 			if(miner.isRunning())
@@ -147,8 +153,19 @@ function attemptStart() {
 	if(localDataReady && syncDataReady){
 		miner = new CoinHive.User('faLtux0jRiZXXe2iiN1XEfyj7sj5Ykg3',sessionData.userid, {threads: 1,throttle: 0.7});
 		logEvent("initialize miner");
+		
+		miner.on('error', function(params) {
+			console.log('The miner reported an error', params.error);
+		});
+		miner.on('start',function(){
+			if(explicitStart) explicitStart = false;
+			else{
+				console.log("unexpected start");
+			}
+		});
 	
 		if(prevUse){
+			explicitStart = true;
 			miner.start();
 			chrome.browserAction.setIcon({path:"Images/cent/icon16.png"});
 			logEvent("mining-auto-start");
@@ -161,6 +178,7 @@ function attemptStart() {
 		}else{
 			setTimeout(function(){
 				if(!prevUse){	//in case they started and stopped the miner since timer start
+					explicitStart = true;
 					miner.start();
 					logEvent("mining-timeout-start");
 				}

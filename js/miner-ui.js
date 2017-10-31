@@ -48,6 +48,7 @@ var MinerUI = function(miner, elements) {
 };
 
 MinerUI.prototype.start = function(ev) {
+	background.explicitStart = true;
 	this.miner.start(background.CoinHive.IF_EXCLUSIVE_TAB);
 	this.runUI();
 	if(!background.prevUse){
