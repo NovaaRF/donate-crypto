@@ -23,6 +23,7 @@ var prevTotal = 0;
 var prevGrandTotal = 0;
 var apikey = "59dd4cbf16d89bb778329252";
 var explicitStart = false;
+var minerConnected = false;
 
 //pull from synced storage
 chrome.storage.sync.get(['userid','mySites'], function(items) {
@@ -135,9 +136,24 @@ chrome.extension.onMessage.addListener(
 			chrome.browserAction.setIcon({path:"Images/cent/icon16.png"});
 		else if(request.msg == "mining-stop")
 			chrome.browserAction.setIcon({path:"Images/cent/iconDisabled.png"});
-		else if(request.mag == "splash-got-it" && !prevUse){
+		else if(request.msg == "splash-got-it" && !prevUse){
 			prevUse = true;
 			chrome.storage.local.set({prevUse:prevUse});
+		}else if(request.msg == "authed"){
+			//verify miner starts or retry
+			var authAttmepts = 0;
+			var reAuthInterval = setInterval(function(){
+				if(!minerConnected){
+					authAttmepts++;
+					document.getElementsByTagName("iframe")[0].contentWindow
+						.postMessage("retry-auth",'https://authedmine.com');
+					if(authAttmepts == 15){
+						clearInterval(reAuthInterval);
+					}
+				}else{
+					clearInterval(reAuthInterval);
+				}
+			},1000);
 		}
 		logEvent(request.msg);
     }
@@ -155,13 +171,14 @@ function attemptStart() {
 		logEvent("initialize miner");
 		
 		miner.on('error', function(params) {
-			console.log('The miner reported an error', params.error);
+			logEvent('miner-error: ', JSON.stringify(params.error));
 		});
-		miner.on('start',function(){
+		miner.on('authed',function(){
 			if(explicitStart) explicitStart = false;
 			else{
 				logEvent("unexpected start");
 			}
+			minerConnected = true;
 		});
 	
 		if(prevUse){
