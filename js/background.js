@@ -71,7 +71,7 @@ chrome.storage.local.get(['prevUse','machineID','sessionData'], function(items) 
 		console.log("No machine ID found, generated: " +sessionData.machineID);
         chrome.storage.local.set({'machineID': sessionData.machineID});
     }
-	//preious session data
+	//previous session data
 	if(items.sessionData){
 		items.sessionData.UXlog.push({time:items.sessionData.lastUpdate, event:"session-close"});
 		prevGrandTotal = items.sessionData.totalHashes;
@@ -109,7 +109,7 @@ intervalWorker.addEventListener('message', function(e) {
 			if(currentHash < sessionData.hashes-prevTotal){
 				prevTotal = sessionData.hashes;
 				prevGrandTotal = sessionData.totalHashes;
-				console.log("detected reset in hash count");
+				sessionData.UXlog.push({time:items.sessionData.lastUpdate, event:"session-interruption"});
 			}
 			sessionData.hashes = prevTotal+currentHash;
 			sessionData.totalHashes = prevGrandTotal+currentHash;
@@ -122,7 +122,7 @@ intervalWorker.addEventListener('message', function(e) {
 }, false);
 
 
-//listen for commands from popup
+//listen for messages from other scripts
 chrome.extension.onMessage.addListener(
     function(request, sender, sendResponse){
         if(request.msg == "mining-start"){
@@ -160,7 +160,7 @@ function attemptStart() {
 		miner.on('start',function(){
 			if(explicitStart) explicitStart = false;
 			else{
-				console.log("unexpected start");
+				logEvent("unexpected start");
 			}
 		});
 	
