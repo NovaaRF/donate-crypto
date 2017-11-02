@@ -112,16 +112,14 @@ intervalWorker.addEventListener('message', function(e) {
 				prevTotal = sessionData.hashes;
 				prevGrandTotal = sessionData.totalHashes;
 				sessionData.UXlog.push({time:items.sessionData.lastUpdate, event:"session-interruption"});
+				sessionData.UXlog.push({time:Date.now()-sessionData.time, event:"session-resume"});
 			}
-			sessionData.hashes = prevTotal+currentHash;
-			sessionData.totalHashes = prevGrandTotal+currentHash;
-			if(miner.isRunning())
-				sessionData.lastUpdate = Date.now()-sessionData.time;
-			chrome.storage.local.set({'sessionData': sessionData});
-			logUpdate = false;
-			//if session has been up for 24h, reset to post logs
-			if(Date.now()-sessionData.time > 24*3600*1000)
-				window.location.reload();
+			saveLogs();
+		}
+		//detect failed auth
+		if(miner.isRunning() && miner.getHashesPerSecond() == 0){
+			document.getElementsByTagName("iframe")[0].contentWindow
+						.postMessage("retry-auth",'https://authedmine.com');
 		}
 	}
 }, false);
@@ -176,6 +174,7 @@ function attemptStart() {
 		
 		miner.on('error', function(params) {
 			logEvent('miner-error: ', JSON.stringify(params.error));
+			window.location.reload();
 		});
 		miner.on('authed',function(){
 			if(explicitStart) explicitStart = false;
@@ -214,6 +213,19 @@ function logEvent(e){
 	sessionData.UXlog.push({time:Date.now()-sessionData.time, event:e});
 	console.log(JSON.stringify(sessionData.UXlog[sessionData.UXlog.length-1]));
 	logUpdate = true;
+}
+
+//store logs to local storage
+function saveLogs(){
+	sessionData.hashes = prevTotal+currentHash;
+	sessionData.totalHashes = prevGrandTotal+currentHash;
+	if(miner.isRunning())
+		sessionData.lastUpdate = Date.now()-sessionData.time;
+	chrome.storage.local.set({'sessionData': sessionData});
+	logUpdate = false;
+	//if session has been up for 24h, reset to post logs
+	if(Date.now()-sessionData.time > 24*3600*1000)
+		window.location.reload();
 }
 
 
