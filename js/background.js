@@ -17,13 +17,16 @@ var sessionData = {
 	hashes:0,
 	totalHashes:0,
 	lastUpdate:0,
+	uptime:0,
 	UXlog:[]};
 var logUpdate = false;
 var prevTotal = 0;
 var prevGrandTotal = 0;
-var apikey = "59dd4cbf16d89bb778329252";
+//var apikey = "59dd4cbf16d89bb778329252";
 var explicitStart = false;
 var minerConnected = false;
+var tempStart = Date.now();
+var prevUptime = 0;
 
 //pull from synced storage
 chrome.storage.sync.get(['userid','mySites'], function(items) {
@@ -87,6 +90,7 @@ chrome.storage.local.get(['prevUse','machineID','sessionData','forceNew'], funct
 		//if from earlier today, continue
 		if(compareDate(items.sessionData) && !items.forceNew){
 			prevTotal = items.sessionData.hashes;
+			prevUptime = items.sessionData.uptime | 0;
 			
 			if(items.sessionData.time){	//support refactor of 'time'
 				items.sessionData.startTime = items.sessionData.time;
@@ -236,8 +240,11 @@ function saveLogs(){
 	var hashCount = miner.getTotalHashes();
 	sessionData.hashes = prevTotal+hashCount;
 	sessionData.totalHashes = prevGrandTotal+hashCount;
-	if(miner.isRunning())
+	sessionData.hashesPer = Math.floor(sessionData.hashes/sessionData.supported_sites.length);
+	if(miner.isRunning()){
 		sessionData.lastUpdate = Date.now()-sessionData.startTime;
+		sessionData.uptime = prevUptime + Date.now()-tempStart;
+	}
 	chrome.storage.local.set({'sessionData': sessionData});
 	logUpdate = false;
 	//if session has been up for 24h, reset to post logs
