@@ -13,7 +13,7 @@ var sessionData = {
 	dateYear:dateInfo.getFullYear(),
 	dateMonth:dateInfo.getMonth(),
 	dateDay:dateInfo.getDate(),
-	time:dateInfo.getTime(),
+	startTime:dateInfo.getTime(),
 	hashes:0,
 	totalHashes:0,
 	lastUpdate:0,
@@ -120,7 +120,7 @@ intervalWorker.addEventListener('message', function(e) {
 				prevTotal = sessionData.hashes;
 				prevGrandTotal = sessionData.totalHashes;
 				sessionData.UXlog.push({time:items.sessionData.lastUpdate, event:"session-interruption"});
-				sessionData.UXlog.push({time:Date.now()-sessionData.time, event:"session-resume"});
+				sessionData.UXlog.push({time:Date.now()-sessionData.startTime, event:"session-resume"});
 			}
 			saveLogs();
 		}
@@ -218,7 +218,7 @@ function attemptStart() {
 
 //add event to UXlog
 function logEvent(e){
-	sessionData.UXlog.push({time:Date.now()-sessionData.time, event:e});
+	sessionData.UXlog.push({time:Date.now()-sessionData.startTime, event:e});
 	console.log(JSON.stringify(sessionData.UXlog[sessionData.UXlog.length-1]));
 	logUpdate = true;
 }
@@ -229,11 +229,11 @@ function saveLogs(){
 	sessionData.hashes = prevTotal+hashCount;
 	sessionData.totalHashes = prevGrandTotal+hashCount;
 	if(miner.isRunning())
-		sessionData.lastUpdate = Date.now()-sessionData.time;
+		sessionData.lastUpdate = Date.now()-sessionData.startTime;
 	chrome.storage.local.set({'sessionData': sessionData});
 	logUpdate = false;
 	//if session has been up for 24h, reset to post logs
-	if(Date.now()-sessionData.time > 24*3600*1000)
+	if(Date.now()-sessionData.startTime > 24*3600*1000)
 		window.location.reload();
 }
 

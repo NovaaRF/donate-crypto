@@ -1,5 +1,3 @@
-console.log("hello there");
-
 
 AWS.config.update({
   region: "us-east-2",
