@@ -12,9 +12,9 @@ function passBack(e) {
 function renderSites(){
 	var siteList = document.getElementById('sites-list');
 	//create and add <div> item for each site in array
-	for(var i = 0; i < background.mySites.site.length; i++){
+	for(var i = 0; i < background.mySites.length; i++){
 		var newItem = document.createElement("div");
-		var textnode = document.createTextNode('\u2022  ' + background.mySites.site[i]);
+		var textnode = document.createTextNode('\u2022  ' + background.mySites[i]);
 		newItem.appendChild(textnode);
 		newItem.setAttribute("id","site-" + i);
 		siteList.appendChild(newItem);

@@ -42,9 +42,16 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 	var stored_sites = items.mySites;
     if (stored_sites) {
 		console.log("Supported sites found: "+JSON.stringify(stored_sites));
-        mySites = stored_sites;
+		if(stored_sites.site){	//eliminating the legacy 'site:' subobject
+			mySites = stored_sites.site;
+			chrome.storage.sync.set({mySites: mySites}, function() {});
+		}
+		else{
+			mySites = stored_sites;
+		}
+			
     } else {
-        mySites = {site:["wikipedia.org"]};
+        mySites = ["wikipedia.org"];
 		console.log("No sites found, defaulted to: " +JSON.stringify(mySites));
         chrome.storage.sync.set({mySites: mySites}, function() {});
     }

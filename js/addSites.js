@@ -15,9 +15,9 @@ function renderDefault() {
 	}
 	
 	//create and add <div> item for each site in array
-	for(var i = 0; i < background.mySites.site.length; i++){
+	for(var i = 0; i < background.mySites.length; i++){
 		var newItem = document.createElement("div");
-		var textnode = document.createTextNode(background.mySites.site[i]);
+		var textnode = document.createTextNode(background.mySites[i]);
 		newItem.appendChild(textnode);
 		newItem.setAttribute("id","site-" + i);
 		siteList.appendChild(newItem);
@@ -68,7 +68,7 @@ function setState(new_state) {
 		//add a site to the list
 		var inputValue = document.getElementById('new-site-input').value;
 		if(inputValue){
-			background.mySites.site.push(inputValue);
+			background.mySites.push(inputValue);
 			sitesChanged = true;
 		}
 		document.getElementById('new-site-input').value = [];
@@ -78,10 +78,10 @@ function setState(new_state) {
 	//commit removing a site
 	} else if(state == "removing" && new_state == "remove"){
 		//find and remove all elements of toRemove from sites array
-		for(var i=0; i<background.mySites.site.length; i++){
+		for(var i=0; i<background.mySites.length; i++){
 			for(var j=0; j<toRemove.length; j++){
-				if(document.getElementById(toRemove[j]).childNodes[0].nodeValue == background.mySites.site[i]){
-					background.mySites.site.splice(i,1);
+				if(document.getElementById(toRemove[j]).childNodes[0].nodeValue == background.mySites[i]){
+					background.mySites.splice(i,1);
 					sitesChanged = true;
 				}
 			}
