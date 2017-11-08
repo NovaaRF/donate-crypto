@@ -45,7 +45,7 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 		if(stored_sites.site){	//eliminating the legacy 'site:' subobject
 			console.log("eliminating the legacy 'site:' subobject");
 			mySites = stored_sites.site;
-			chrome.storage.sync.set({mySites: mySites}, function() {});
+			chrome.storage.sync.set({mySites: mySites});
 		}
 		else{
 			mySites = stored_sites;
@@ -54,7 +54,7 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
     } else {
         mySites = ["wikipedia.org"];
 		console.log("No sites found, defaulted to: " +JSON.stringify(mySites));
-        chrome.storage.sync.set({mySites: mySites}, function() {});
+        chrome.storage.sync.set({mySites: mySites});
     }
 	
 	sessionData.supported_sites = mySites;
@@ -63,7 +63,7 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 });
 
 //pull from local storage
-chrome.storage.local.get(['prevUse','machineID','sessionData'], function(items) {
+chrome.storage.local.get(['prevUse','machineID','sessionData','forceNew'], function(items) {
 	//previously used app
 	if (items.prevUse) {
 		prevUse = true;
@@ -85,12 +85,16 @@ chrome.storage.local.get(['prevUse','machineID','sessionData'], function(items) 
 		items.sessionData.UXlog.push({time:items.sessionData.lastUpdate, event:"session-close"});
 		prevGrandTotal = items.sessionData.totalHashes;
 		//if from earlier today, continue
-		if(compareDate(items.sessionData)){
+		if(compareDate(items.sessionData) && !items.forceNew){
 			prevTotal = items.sessionData.hashes;
 			sessionData = items.sessionData;
-			console.log("Found previous session today: " + JSON.stringify(items.sessionData.hashes));
+			console.log("Found previous session today: " + items.sessionData.hashes);
 		//if from previous day, post to database
 		}else{
+			if(items.forceNew){
+				console.log("new session forced");
+				chrome.storage.local.set({'forceNew': false});
+			}
 			console.log("Session expired, posting to database");
 			postLog(items.sessionData);
 		}
@@ -282,5 +286,10 @@ function postLog(dataObj){
 	xhr.send(JSON.stringify(dataObj));
 };
 
+
+//hidden function for debugging
+function forceNewSession(){
+	chrome.storage.local.set({'forceNew': true}, function(){window.location.reload();});
+}
 
 
