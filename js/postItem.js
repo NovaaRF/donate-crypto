@@ -1,7 +1,6 @@
 
 AWS.config.update({
   region: "us-east-2",
-  endpoint: 'http://localhost:8000',
   accessKeyId: "AKIAJYURZ5OUXUO65UOQ",
   secretAccessKey: "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"
 });
@@ -15,7 +14,7 @@ function postAWSlogs(dataObj){
 		TableName: "user_logs",
 		Item: dataObj
 	};
-	params.Item.userId = dataObj.userid +'_'+dataObj.machineID;
+	params.Item.userUniqueId = dataObj.userid +'_'+dataObj.machineID;
 	params.Item.timeStamp = Date.now();
 	
 	console.log("Adding to database:",params.Item);
