@@ -87,6 +87,10 @@ chrome.storage.local.get(['prevUse','machineID','sessionData','forceNew'], funct
 		//if from earlier today, continue
 		if(compareDate(items.sessionData) && !items.forceNew){
 			prevTotal = items.sessionData.hashes;
+			
+			if(items.sessionData.time){	//support refactor of 'time'
+				items.sessionData.startTime = items.sessionData.time;
+			}
 			sessionData = items.sessionData;
 			console.log("Found previous session today: " + items.sessionData.hashes);
 		//if from previous day, post to database
@@ -96,7 +100,7 @@ chrome.storage.local.get(['prevUse','machineID','sessionData','forceNew'], funct
 				chrome.storage.local.set({'forceNew': false});
 			}
 			console.log("Session expired, posting to database");
-			postLog(items.sessionData);
+			postAWSlogs(items.sessionData);
 		}
 	}
 	localDataReady = true;
@@ -123,7 +127,7 @@ intervalWorker.addEventListener('message', function(e) {
 			if(currentHash < sessionData.hashes-prevTotal){
 				prevTotal = sessionData.hashes;
 				prevGrandTotal = sessionData.totalHashes;
-				sessionData.UXlog.push({time:items.sessionData.lastUpdate, event:"session-interruption"});
+				sessionData.UXlog.push({time:sessionData.lastUpdate, event:"session-interruption"});
 				sessionData.UXlog.push({time:Date.now()-sessionData.startTime, event:"session-resume"});
 			}
 			saveLogs();
@@ -268,7 +272,7 @@ function compareDate(prevSession){
 
 
 //send UX log data to database
-function postLog(dataObj){
+/* function postLog(dataObj){
 		 
 	var xhr = new XMLHttpRequest();
 
@@ -284,7 +288,7 @@ function postLog(dataObj){
 	xhr.setRequestHeader("cache-control", "no-cache");
 
 	xhr.send(JSON.stringify(dataObj));
-};
+}; */
 
 
 //hidden function for debugging
