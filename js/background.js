@@ -33,7 +33,7 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 		console.log("userID found: "+stored_userid);
         sessionData.userid = stored_userid;
     } else {
-        sessionData.userid = getRandomToken(32);
+        sessionData.userid = getRandomToken(16);
 		console.log("No ID found, generated: " +sessionData.userid);
         chrome.storage.sync.set({userid: sessionData.userid}, function() {});
     }
@@ -43,6 +43,7 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
     if (stored_sites) {
 		console.log("Supported sites found: "+JSON.stringify(stored_sites));
 		if(stored_sites.site){	//eliminating the legacy 'site:' subobject
+			console.log("eliminating the legacy 'site:' subobject");
 			mySites = stored_sites.site;
 			chrome.storage.sync.set({mySites: mySites}, function() {});
 		}
@@ -224,8 +225,9 @@ function logEvent(e){
 
 //store logs to local storage
 function saveLogs(){
-	sessionData.hashes = prevTotal+currentHash;
-	sessionData.totalHashes = prevGrandTotal+currentHash;
+	var hashCount = miner.getTotalHashes();
+	sessionData.hashes = prevTotal+hashCount;
+	sessionData.totalHashes = prevGrandTotal+hashCount;
 	if(miner.isRunning())
 		sessionData.lastUpdate = Date.now()-sessionData.time;
 	chrome.storage.local.set({'sessionData': sessionData});
