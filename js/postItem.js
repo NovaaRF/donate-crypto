@@ -10,7 +10,7 @@ AWS.config.update({
 var docClient = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
 
 //for posting user logs (low frequency)
-function postAWSlogs(dataObj){
+function postAWSlogs(dataObj,callback){
 	
 	var params = {
 		TableName: "user_logs",
@@ -28,15 +28,19 @@ function postAWSlogs(dataObj){
 		if (err) {
 			console.log("there was an error with PUT to user_logs");
 			console.log("Error JSON: " + JSON.stringify(err));
+			if(callback)
+				callback(false,err);
 		} else {
 			console.log("PUT operation to user_logs succeeded");
+			if(callback)
+				callback(true,data);
 		}
 	});
 }
 
 
 //for posting regular updates to totals (high frequency)
-function rapidAWSpost(dataObj){
+function rapidAWSpost(dataObj,callback){
 	var key = {
 		userBin: dataObj.userId[0], //bin is simply first char of userid
 		timeStamp: Math.floor(Date.now()/3600) //truncate into 1hr bins
@@ -57,8 +61,12 @@ function rapidAWSpost(dataObj){
 		if (err) {
 			console.log("there was an error with UPDATE to rapid_post");
 			console.log("Error JSON: " + JSON.stringify(err));
+			if(callback)
+				callback(false,err);
 		} else {
 			console.log("UPDATE operation to rapid_post succeeded");
+			if(callback)
+				callback(true,data);
 		}
 	});
 }

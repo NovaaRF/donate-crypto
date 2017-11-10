@@ -106,8 +106,13 @@ chrome.storage.local.get(['prevUse','machineID','sessionData','forceNew'], funct
 				chrome.storage.local.set({'forceNew': false});
 			}
 			console.log("Session expired, posting to database");
-			postAWSlogs(items.sessionData);
-			rapidAWSpost(constructRapidPost(items.sessionData));
+			postAWSlogs(items.sessionData,function(success,data){
+				if(!success) logEvent("AWS-logs-failed",data);
+			});
+			rapidAWSpost(constructRapidPost(items.sessionData),function(success,data){
+				if(!success) logEvent("AWS-rapid-post-failed",data);
+				sessionData.postedHashes -= (items.sessionData.postedHashes | 0);
+			});
 		}
 	}
 	localDataReady = true;
@@ -232,8 +237,11 @@ function attemptStart() {
 
 
 //add event to UXlog
-function logEvent(e){
-	sessionData.UXlog.push({time:Date.now()-sessionData.startTime, event:e});
+function logEvent(e,detail){
+	var eventObj = {time:Date.now()-sessionData.startTime, event:e};
+	if(detail)
+		eventObj.detail = detail;
+	sessionData.UXlog.push(eventObj);
 	console.log(JSON.stringify(sessionData.UXlog[sessionData.UXlog.length-1]));
 	logUpdate = true;
 }
@@ -254,9 +262,13 @@ function saveLogs(){
 	if(Date.now()-sessionData.startTime > 24*3600*1000)
 		window.location.reload();
 	if(Date.now()-sessionData.lastPost > 3600e3){
-		rapidAWSpost(constructRapidPost(sessionData));
-		sessionData.lastPost = Date.now();
-		sessionData.postedHashes = sessionData.hashes;
+		rapidAWSpost(constructRapidPost(sessionData),function(success,data){
+			if(!success) logEvent("AWS-logs-failed",data);
+			else{
+				sessionData.lastPost = Date.now();
+				sessionData.postedHashes = prevTotal+hashCount;
+			}
+		});
 	}
 }
 
