@@ -19,7 +19,7 @@ var sessionData = {
 	lastUpdate:0,
 	lastPost:Date.now(),
 	uptime:0,
-	newHashes:0,
+	postedHashes:0,
 	UXlog:[]};
 var logUpdate = false;
 var prevTotal = 0;
@@ -254,10 +254,9 @@ function saveLogs(){
 	if(Date.now()-sessionData.startTime > 24*3600*1000)
 		window.location.reload();
 	if(Date.now()-sessionData.lastPost > 3600e3){
-		var submittedHashes = sessionData.newHashes;
 		rapidAWSpost(constructRapidPost(sessionData));
 		sessionData.lastPost = Date.now();
-		sessionData.newHashes -= submittedHashes;
+		sessionData.postedHashes = sessionData.hashes;
 	}
 }
 
@@ -312,7 +311,7 @@ function constructRapidPost(_sessionData){
 	var postObject = {
 		userId: _sessionData.userid,
 		sites: _sessionData.supported_sites,
-		newHashes: _sessionData.newHashes | 0
+		newHashes: _sessionData.hashes - (_sessionData.postedHashes | 0)
 	};
 	return postObject;
 }

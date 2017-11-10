@@ -19,6 +19,9 @@ function postAWSlogs(dataObj){
 	params.Item.userUniqueId = dataObj.userid +'_'+dataObj.machineID;
 	params.Item.timeStamp = Date.now();
 	
+	delete params.Item.postedHashes;
+	delete params.Item.lastPost;
+	
 	console.log("Adding to user_logs:",params);
 	
 	docClient.put(params, function (err, data) {
