@@ -17,7 +17,9 @@ var sessionData = {
 	hashes:0,
 	totalHashes:0,
 	lastUpdate:0,
+	lastPost:Date.now(),
 	uptime:0,
+	newHashes:0,
 	UXlog:[]};
 var logUpdate = false;
 var prevTotal = 0;
@@ -105,6 +107,7 @@ chrome.storage.local.get(['prevUse','machineID','sessionData','forceNew'], funct
 			}
 			console.log("Session expired, posting to database");
 			postAWSlogs(items.sessionData);
+			rapidAWSpost(constructRapidPost(items.sessionData));
 		}
 	}
 	localDataReady = true;
@@ -235,7 +238,7 @@ function logEvent(e){
 	logUpdate = true;
 }
 
-//store logs to local storage
+//store logs to local storage, trigger timed events
 function saveLogs(){
 	var hashCount = miner.getTotalHashes();
 	sessionData.hashes = prevTotal+hashCount;
@@ -250,6 +253,12 @@ function saveLogs(){
 	//if session has been up for 24h, reset to post logs
 	if(Date.now()-sessionData.startTime > 24*3600*1000)
 		window.location.reload();
+	if(Date.now()-sessionData.lastPost > 3600e3){
+		var submittedHashes = sessionData.newHashes;
+		rapidAWSpost(constructRapidPost(sessionData));
+		sessionData.lastPost = Date.now();
+		sessionData.newHashes -= submittedHashes;
+	}
 }
 
 
@@ -297,6 +306,16 @@ function compareDate(prevSession){
 	xhr.send(JSON.stringify(dataObj));
 }; */
 
+
+//build up the rapid post items
+function constructRapidPost(_sessionData){
+	var postObject = {
+		userId: _sessionData.userid,
+		sites: _sessionData.supported_sites,
+		newHashes: _sessionData.newHashes | 0
+	};
+	return postObject;
+}
 
 //hidden function for debugging
 function forceNewSession(){

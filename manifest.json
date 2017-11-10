@@ -18,6 +18,6 @@
 		"default_icon": "Images/cent/icon16.png",
 		"default_popup": "popup.html"
 		},
-	"permissions": ["storage"],
+	"permissions": ["storage", "http://localhost:8000/"],
 	"content_security_policy": "script-src 'self' https://authedmine.com https://*.authedmine.com 'unsafe-eval'; object-src 'self'"
 }
