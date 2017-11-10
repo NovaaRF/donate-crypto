@@ -1,6 +1,6 @@
 
 AWS.config.update({
-	endpoint: "http://localhost:8000",
+	//endpoint: "http://localhost:8000",
   region: "us-east-2",
   accessKeyId: "AKIAJYURZ5OUXUO65UOQ",
   secretAccessKey: "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"
