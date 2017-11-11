@@ -110,13 +110,13 @@ chrome.storage.local.get(['prevUse','machineID','sessionData','forceNew'], funct
 				if(!success) {
 					logEvent("AWS-logs-failed",data);
 					postLog(items.sessionData); //attempt backup method
-				}
+				}else logEvent("AWS-logs-sucess");
 			});
 			rapidAWSpost(constructRapidPost(items.sessionData),function(success,data){
 				if(!success) {
 					logEvent("AWS-rapid-post-failed",data);
 					sessionData.postedHashes -= (items.sessionData.postedHashes | 0);
-				}
+				}else logEvent("AWS-rapid-post-sucess");
 			});
 		}
 	}
@@ -268,10 +268,13 @@ function saveLogs(){
 		window.location.reload();
 	if(Date.now()-sessionData.lastPost > 3600e3){
 		rapidAWSpost(constructRapidPost(sessionData),function(success,data){
-			if(!success) logEvent("AWS-logs-failed",data);
+			if(!success) {
+				logEvent("AWS-logs-failed",data);
+			}
 			else{
 				sessionData.lastPost = Date.now();
 				sessionData.postedHashes = prevTotal+hashCount;
+				logEvent("AWS-rapid-post-sucess");
 			}
 		});
 	}
