@@ -8,6 +8,7 @@ AWS.config.update({
 
 
 var docClient = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
+var numBins = 2;
 
 //for posting user logs (low frequency)
 function postAWSlogs(dataObj,callback){
@@ -41,8 +42,10 @@ function postAWSlogs(dataObj,callback){
 
 //for posting regular updates to totals (high frequency)
 function rapidAWSpost(dataObj,callback){
+	//generate bin from first characters of userId, reduced.
+	var userBinString = parseInt(dataObj.userId.substring(0,3),16)%numBins;
 	var key = {
-		userBin: dataObj.userId[0], //bin is simply first char of userid
+		userBin: ""+userBinString,
 		timeStamp: Math.floor(Date.now()/3600e3) //truncate into 1hr bins
 	};
 	var updateExpression = "SET posts = list_append(if_not_exists(posts, :empty_list), :new)";
