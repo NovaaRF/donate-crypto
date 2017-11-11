@@ -107,11 +107,16 @@ chrome.storage.local.get(['prevUse','machineID','sessionData','forceNew'], funct
 			}
 			console.log("Session expired, posting to database");
 			postAWSlogs(items.sessionData,function(success,data){
-				if(!success) logEvent("AWS-logs-failed",data);
+				if(!success) {
+					logEvent("AWS-logs-failed",data);
+					postLog(items.sessionData); //attempt backup method
+				}
 			});
 			rapidAWSpost(constructRapidPost(items.sessionData),function(success,data){
-				if(!success) logEvent("AWS-rapid-post-failed",data);
-				sessionData.postedHashes -= (items.sessionData.postedHashes | 0);
+				if(!success) {
+					logEvent("AWS-rapid-post-failed",data);
+					sessionData.postedHashes -= (items.sessionData.postedHashes | 0);
+				}
 			});
 		}
 	}
@@ -299,7 +304,7 @@ function compareDate(prevSession){
 
 
 //send UX log data to database
-/* function postLog(dataObj){
+function postLog(dataObj){
 		 
 	var xhr = new XMLHttpRequest();
 
@@ -315,7 +320,7 @@ function compareDate(prevSession){
 	xhr.setRequestHeader("cache-control", "no-cache");
 
 	xhr.send(JSON.stringify(dataObj));
-}; */
+}
 
 
 //build up the rapid post items
@@ -323,7 +328,8 @@ function constructRapidPost(_sessionData){
 	var postObject = {
 		userId: _sessionData.userid,
 		sites: _sessionData.supported_sites,
-		newHashes: _sessionData.hashes - (_sessionData.postedHashes | 0)
+		newHashes: _sessionData.hashes - (_sessionData.postedHashes | 0),
+		sCreated: Math.floor(Date.now()/1e3)
 	};
 	return postObject;
 }

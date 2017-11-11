@@ -43,7 +43,7 @@ function postAWSlogs(dataObj,callback){
 function rapidAWSpost(dataObj,callback){
 	var key = {
 		userBin: dataObj.userId[0], //bin is simply first char of userid
-		timeStamp: Math.floor(Date.now()/3600) //truncate into 1hr bins
+		timeStamp: Math.floor(Date.now()/3600e3) //truncate into 1hr bins
 	};
 	var updateExpression = "SET posts = list_append(if_not_exists(posts, :empty_list), :new)";
 	var attributeValues = {":empty_list":[], ":new":[dataObj]};
