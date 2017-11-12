@@ -116,7 +116,7 @@ chrome.storage.local.get(['prevUse','machineID','sessionData','forceNew'], funct
 				if(!success) {
 					logEvent("AWS-rapid-post-failed",data);
 					sessionData.postedHashes -= (items.sessionData.postedHashes | 0);
-				}else logEvent("AWS-rapid-post-sucess");
+				}else logEvent("AWS-rapid-post-success");
 			});
 		}
 	}
@@ -274,7 +274,7 @@ function saveLogs(){
 			else{
 				sessionData.lastPost = Date.now();
 				sessionData.postedHashes = prevTotal+hashCount;
-				logEvent("AWS-rapid-post-sucess");
+				logEvent("AWS-rapid-post-success");
 			}
 		});
 	}
