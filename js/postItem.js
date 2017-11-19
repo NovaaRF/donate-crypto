@@ -85,13 +85,46 @@ function prepUserLogs(preData){
 	delete data.postedHashes;
 	delete data.lastPost;
 	//console.log(data);
-	return dynamodbMarshaler.marshalJson(JSON.stringify(data));
+	return JSON.stringify(dynamodbMarshaler.marshal(data));
 }
 
+//format rapidPosts for transmission through the API
+function prepRapidPost(preData){
+	//first edit data inclusionssess
+	var data = {
+		userId: preData.userid,
+		sites: preData.supported_sites,
+		newHashes: preData.hashes - (preData.postedHashes | 0),
+		sCreated: Math.floor(Date.now()/1e3)
+	};
+	
+	//then generate parameters JSON
+		//generate bin from first characters of userId, reduced.
+	var userBinString = parseInt(data.userId.substring(0,3),16)%numBins;
+	var key = {
+		userBin: {S:""+userBinString},
+		timeStamp: {N:""+Math.floor(Date.now()/3600e3)} //truncate into 1hr bins
+	};
+	var updateExpression = '"SET posts = list_append(if_not_exists(posts, :empty_list), :new)"';
+	var attributeValues = '{'
+		+' ":empty_list": {"L":[]}, '
+		+' ":new": {"L":['+JSON.stringify(dynamodbMarshaler.marshal(data))+']}'
+		+'}';
+	
+	var params = '{'
+		+'"Key": ' + JSON.stringify(key) +','
+		+'"UpdateExpression": '+updateExpression+','
+		+'"ExpressionAttributeValues": '+attributeValues
+	+'}';
+	return params;
+}
+
+
 var userLogs = "/logs";
+var rapidPost = "/rapid";
 var apiEndpoint = "https://1azza0hmgb.execute-api.us-east-2.amazonaws.com/Test_v1";
 //send UX log data to database via API
-function postLogApi(path,dataObj,callback){
+function postLogApi(path,dataString,callback){
 		 
 	var xhr = new XMLHttpRequest();
 
@@ -110,6 +143,6 @@ function postLogApi(path,dataObj,callback){
 	//xhr.setRequestHeader("x-apikey", apikey);
 	//xhr.setRequestHeader("cache-control", "no-cache");
 
-	xhr.send(JSON.stringify(dataObj));
+	xhr.send(dataString);
 }
 
