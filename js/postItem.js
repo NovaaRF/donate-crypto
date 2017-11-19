@@ -10,6 +10,7 @@ var testData;
 var docClient = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
 var numBins = 2;
 
+//depracated..
 //for posting user logs (low frequency)
 function postAWSlogs(dataObj,callback){
 	
@@ -41,7 +42,7 @@ function postAWSlogs(dataObj,callback){
 	});
 }
 
-
+//Depracated..
 //for posting regular updates to totals (high frequency)
 function rapidAWSpost(dataObj,callback){
 	//generate bin from first characters of userId, reduced.
@@ -90,7 +91,7 @@ function prepUserLogs(preData){
 
 //format rapidPosts for transmission through the API
 function prepRapidPost(preData){
-	//first edit data inclusionssess
+	//first edit data inclusions
 	var data = {
 		userId: preData.userid,
 		sites: preData.supported_sites,
@@ -103,7 +104,7 @@ function prepRapidPost(preData){
 	var userBinString = parseInt(data.userId.substring(0,3),16)%numBins;
 	var key = {
 		userBin: {S:""+userBinString},
-		timeStamp: {N:""+Math.floor(Date.now()/3600e3)} //truncate into 1hr bins
+		timeStamp: {N: ""+Math.floor(Date.now()/3600e3)} //truncate into 1hr bins
 	};
 	var updateExpression = '"SET posts = list_append(if_not_exists(posts, :empty_list), :new)"';
 	var attributeValues = '{'

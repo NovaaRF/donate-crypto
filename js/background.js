@@ -111,10 +111,10 @@ chrome.storage.local.get(['prevUse','machineID','sessionData','forceNew'], funct
 					logEvent("AWS-logs-sucess");
 				} 
 			});
-			rapidAWSpost(constructRapidPost(items.sessionData),function(success,data){
-				if(!success) {
+			postLogApi(rapidPost,prepRapidPost(items.sessionData),function(response){
+				if(response) {
 					logEvent("AWS-rapid-post-failed",data);
-					sessionData.postedHashes -= (items.sessionData.postedHashes | 0);
+					sessionData.postedHashes -= items.sessionData.hashes - (items.sessionData.postedHashes | 0);
 				}else logEvent("AWS-rapid-post-success");
 			});
 		}
@@ -266,8 +266,8 @@ function saveLogs(){
 	if(Date.now()-sessionData.startTime > 24*3600*1000)
 		window.location.reload();
 	if(Date.now()-sessionData.lastPost > 3600e3){
-		rapidAWSpost(constructRapidPost(sessionData),function(success,data){
-			if(!success) {
+		postLogApi(rapidPost,prepRapidPost(sessionData),function(response){
+			if(response) {
 				logEvent("AWS-logs-failed",data);
 			}
 			else{
@@ -303,7 +303,7 @@ function compareDate(prevSession){
 			return false;
 }
 
-
+//backup
 //send UX log data to database
 function postLog(dataObj){
 		 
@@ -323,7 +323,7 @@ function postLog(dataObj){
 	xhr.send(JSON.stringify(dataObj));
 }
 
-
+//depracated
 //build up the rapid post items
 function constructRapidPost(_sessionData){
 	var postObject = {
