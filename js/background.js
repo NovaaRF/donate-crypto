@@ -8,12 +8,9 @@ var syncDataReady = false;
 var localDataReady = false;
 var intervalWorker = new Worker('js/intervalWorker.js');	//necessary for timing when browser inactive
 var isBrowserAction = true;
-var dateInfo = new Date();
 var sessionData = {
-	dateYear:dateInfo.getFullYear(),
-	dateMonth:dateInfo.getMonth(),
-	dateDay:dateInfo.getDate(),
-	startTime:dateInfo.getTime(),
+	dateString:Date(Date.now()),
+	startTime:Date.now(),
 	hashes:0,
 	totalHashes:0,
 	lastUpdate:0,
@@ -106,11 +103,13 @@ chrome.storage.local.get(['prevUse','machineID','sessionData','forceNew'], funct
 				chrome.storage.local.set({'forceNew': false});
 			}
 			console.log("Session expired, posting to database");
-			postAWSlogs(items.sessionData,function(success,data){
-				if(!success) {
-					logEvent("AWS-logs-failed",data);
+			postLogApi(userLogs,prepUserLogs(items.sessionData),function(response){
+				if(!response) {
+					logEvent("AWS-logs-failed",response);
 					postLog(items.sessionData); //attempt backup method
-				}else logEvent("AWS-logs-sucess");
+				}else{
+					logEvent("AWS-logs-sucess");
+				} 
 			});
 			rapidAWSpost(constructRapidPost(items.sessionData),function(success,data){
 				if(!success) {
@@ -296,9 +295,8 @@ function getRandomToken(tokenLength) {
 
 //compare the dates of current and stored session data
 function compareDate(prevSession){
-	if(prevSession.dateDay == sessionData.dateDay
-		&& prevSession.dateMonth == sessionData.dateMonth
-		&& prevSession.dateYear == sessionData.dateYear){
+	var toDays = 1000*3600*24;
+	if(Math.floor(prevSession.startTime/toDays) == Math.floor(sessionData.startTime/toDays)){
 			return true;
 		}
 		else

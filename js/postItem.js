@@ -6,7 +6,7 @@ AWS.config.update({
   secretAccessKey: "UfQ7vpD66iU20px5gpoYcQgQaPEv61crPwoZ7qsV"
 });
 
-
+var testData;
 var docClient = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
 var numBins = 2;
 
@@ -15,7 +15,7 @@ function postAWSlogs(dataObj,callback){
 	
 	var params = {
 		TableName: "user_logs",
-		Item: dataObj
+		Item: JSON.parse(JSON.stringify(dataObj))
 	};
 	params.Item.userUniqueId = dataObj.userid +'_'+dataObj.machineID;
 	params.Item.timeStamp = Date.now();
@@ -33,8 +33,10 @@ function postAWSlogs(dataObj,callback){
 				callback(false,err);
 		} else {
 			console.log("PUT operation to user_logs succeeded");
-			if(callback)
+			if(callback){
+				testData = data;
 				callback(true,data);
+			}
 		}
 	});
 }
@@ -72,5 +74,42 @@ function rapidAWSpost(dataObj,callback){
 				callback(true,data);
 		}
 	});
+}
+
+
+//format userLogs for posting through API
+function prepUserLogs(preData){
+	var data = JSON.parse(JSON.stringify(preData));	//make a clone of the input object
+	data.userUniqueId = data.userid + "_" + data.machineID;
+	data.timeStamp = Date.now();
+	delete data.postedHashes;
+	delete data.lastPost;
+	//console.log(data);
+	return dynamodbMarshaler.marshalJson(JSON.stringify(data));
+}
+
+var userLogs = "/logs";
+var apiEndpoint = "https://1azza0hmgb.execute-api.us-east-2.amazonaws.com/Test_v1";
+//send UX log data to database via API
+function postLogApi(path,dataObj,callback){
+		 
+	var xhr = new XMLHttpRequest();
+
+	xhr.addEventListener("readystatechange", function () {
+	  if (this.readyState === 4) {
+		console.log("Request status: "+xhr.status);
+		console.log(xhr.responseText);
+		if(callback){
+			callback(xhr.responseText);
+		}
+	  }
+	});
+
+	xhr.open("POST", apiEndpoint+path);
+	xhr.setRequestHeader("content-type", "application/json");
+	//xhr.setRequestHeader("x-apikey", apikey);
+	//xhr.setRequestHeader("cache-control", "no-cache");
+
+	xhr.send(JSON.stringify(dataObj));
 }
 
