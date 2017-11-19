@@ -89,6 +89,7 @@ function prepUserLogs(preData){
 	return JSON.stringify(dynamodbMarshaler.marshal(data));
 }
 
+
 //format rapidPosts for transmission through the API
 function prepRapidPost(preData){
 	//first edit data inclusions
@@ -133,8 +134,12 @@ function postLogApi(path,dataString,callback){
 	  if (this.readyState === 4) {
 		console.log("Request status: "+xhr.status);
 		console.log(xhr.responseText);
+		testData=xhr.responseText;
 		if(callback){
-			callback(xhr.responseText);
+			if(xhr.responseText == "{}")	//replace empty object {} with null
+				callback(null);
+			else
+				callback(xhr.responseText);
 		}
 	  }
 	});

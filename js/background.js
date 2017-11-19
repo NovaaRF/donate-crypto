@@ -268,7 +268,7 @@ function saveLogs(){
 	if(Date.now()-sessionData.lastPost > 3600e3){
 		postLogApi(rapidPost,prepRapidPost(sessionData),function(response){
 			if(response) {
-				logEvent("AWS-logs-failed",data);
+				logEvent("AWS-rapid-post-failed",response);
 			}
 			else{
 				sessionData.lastPost = Date.now();
