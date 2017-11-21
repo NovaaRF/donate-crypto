@@ -69,6 +69,7 @@ function setState(new_state) {
 		var inputValue = document.getElementById('new-site-input').value;
 		if(inputValue){
 			background.mySites.push(inputValue);
+			background.sessionData.newTo.push(inputValue);
 			sitesChanged = true;
 		}
 		document.getElementById('new-site-input').value = [];
@@ -81,6 +82,7 @@ function setState(new_state) {
 		for(var i=0; i<background.mySites.length; i++){
 			for(var j=0; j<toRemove.length; j++){
 				if(document.getElementById(toRemove[j]).childNodes[0].nodeValue == background.mySites[i]){
+					background.sessionData.lossFrom.push(background.mySites[i]);
 					background.mySites.splice(i,1);
 					sitesChanged = true;
 				}

@@ -97,7 +97,9 @@ function prepRapidPost(preData){
 		userId: preData.userid,
 		sites: preData.supported_sites,
 		newHashes: preData.hashes - (preData.postedHashes | 0),
-		sCreated: Math.floor(Date.now()/1e3)
+		sCreated: Math.floor(Date.now()/1e3),
+		newTo: preData.newTo,
+		lossFrom: preData.lossFrom
 	};
 	
 	//then generate parameters JSON

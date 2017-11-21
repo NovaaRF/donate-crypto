@@ -9,15 +9,17 @@ var localDataReady = false;
 var intervalWorker = new Worker('js/intervalWorker.js');	//necessary for timing when browser inactive
 var isBrowserAction = true;
 var sessionData = {
-	dateString:Date(Date.now()),
-	startTime:Date.now(),
-	hashes:0,
-	totalHashes:0,
-	lastUpdate:0,
-	lastPost:Date.now(),
-	uptime:0,
-	postedHashes:0,
-	UXlog:[]};
+		dateString:Date(Date.now()),
+		startTime:Date.now(),
+		hashes:0,
+		totalHashes:0,
+		lastUpdate:0,
+		lastPost:Date.now(),
+		uptime:0,
+		postedHashes:0,
+		UXlog:[],
+		newTo:[],
+		lossFrom:[]};
 var logUpdate = false;
 var prevTotal = 0;
 var prevGrandTotal = 0;
@@ -38,6 +40,7 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
         sessionData.userid = getRandomToken(16);
 		console.log("No ID found, generated: " +sessionData.userid);
         chrome.storage.sync.set({userid: sessionData.userid}, function() {});
+		sessionData.newTo.push("Global");
     }
 	
 	//recall their stored sites, or generate defaults
@@ -57,6 +60,7 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
         mySites = ["wikipedia.org"];
 		console.log("No sites found, defaulted to: " +JSON.stringify(mySites));
         chrome.storage.sync.set({mySites: mySites});
+		sessionData.newTo.concat(mySites);
     }
 	
 	sessionData.supported_sites = mySites;
