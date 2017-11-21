@@ -157,7 +157,6 @@ intervalWorker.addEventListener('message', function(e) {
 			document.getElementsByTagName("iframe")[0].contentWindow
 						.postMessage("retry-auth",'https://authedmine.com');
 		}
-		//detect 24hrs running
 	}
 }, false);
 
@@ -255,12 +254,12 @@ function logEvent(e,detail){
 	logUpdate = true;
 }
 
+var postInProgress = false;
 //store logs to local storage, trigger timed events
 function saveLogs(){
 	var hashCount = miner.getTotalHashes();
 	sessionData.hashes = prevTotal+hashCount;
 	sessionData.totalHashes = prevGrandTotal+hashCount;
-	sessionData.hashesPer = Math.floor(sessionData.hashes/sessionData.supported_sites.length);
 	if(miner.isRunning()){
 		sessionData.lastUpdate = Date.now()-sessionData.startTime;
 		sessionData.uptime = prevUptime + Date.now()-tempStart;
@@ -272,17 +271,26 @@ function saveLogs(){
 	});
 	logUpdate = false;
 	
+	//hourly post
 	if(Date.now()-sessionData.lastPost > 3600e3){
-		postLogApi(rapidPost,prepRapidPost(sessionData),function(response){
-			if(response) {
-				logEvent("AWS-rapid-post-failed",response);
-			}
-			else{
-				sessionData.lastPost = Date.now();
-				sessionData.postedHashes = prevTotal+hashCount;
-				logEvent("AWS-rapid-post-success");
-			}
-		});
+		console.log("hourly rapid post");
+		sessionData.lastPost = Date.now();
+		sessionData.postedHashes = prevTotal+hashCount;
+		var lastPost = hashCount;
+		if(!postInProgress){
+			postLogApi(rapidPost,prepRapidPost(sessionData),function(response){
+				if(response) {
+					logEvent("AWS-rapid-post-failed",response);
+					sessionData.postedHashes -= lastPost;
+					postInProgress = false;
+				}
+				else{
+					logEvent("AWS-rapid-post-success");
+					postInProgress = false;
+				}
+			});
+			postInProgress = true;
+		}
 	}
 }
 
