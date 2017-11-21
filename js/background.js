@@ -68,6 +68,8 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 	attemptStart();
 });
 
+
+var badPosts;
 //pull from local storage
 chrome.storage.local.get(['prevUse','machineID','sessionData','forceNew'], function(items) {
 	//previously used app
@@ -111,13 +113,21 @@ chrome.storage.local.get(['prevUse','machineID','sessionData','forceNew'], funct
 				if(response) {
 					logEvent("AWS-logs-failed",response);
 					postLog(items.sessionData); //attempt backup method
+					chrome.storage.local.get('failedPosts',function(Items){
+						if(Items.failedPosts){
+							Items.failedPosts.push(items.sessionData);
+						}else{
+							Items.failedPosts = [items.sessionData];
+						}
+						chrome.storage.local.set({'failedPosts':Items.failedPosts});
+					})
 				}else{
 					logEvent("AWS-logs-success");
 				} 
 			});
 			postLogApi(rapidPost,prepRapidPost(items.sessionData),function(response){
 				if(response) {
-					logEvent("AWS-rapid-post-failed",data);
+					logEvent("AWS-rapid-post-failed",response);
 					sessionData.postedHashes -= items.sessionData.hashes - (items.sessionData.postedHashes | 0);
 				}else logEvent("AWS-rapid-post-success");
 			});

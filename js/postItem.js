@@ -1,10 +1,9 @@
 
-AWS.config.update({
+/*AWS.config.update({
   region: "us-east-2",
-});
+});*/
 
 var testData;
-//var docClient = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
 var numBins = 2;
 
 
@@ -17,8 +16,11 @@ function prepUserLogs(preData){
 	delete data.lastPost;
 	delete data.newTo;	//to prevent empty values
 	delete data.lossFrom;
+	if(data.UXlog.length == 0)
+		delete data.UXlog;
 	//console.log(data);
-	return JSON.stringify(dynamodbMarshaler.marshal(data));
+	var formattedData = dynamodbMarshaler.marshal(data);
+	return JSON.stringify(formattedData.M);
 }
 
 
