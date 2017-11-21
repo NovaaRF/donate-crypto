@@ -338,17 +338,6 @@ function postLog(dataObj){
 	xhr.send(JSON.stringify(dataObj));
 }
 
-//depracated
-//build up the rapid post items
-/*function constructRapidPost(_sessionData){
-	var postObject = {
-		userId: _sessionData.userid,
-		sites: _sessionData.supported_sites,
-		newHashes: _sessionData.hashes - (_sessionData.postedHashes | 0),
-		sCreated: Math.floor(Date.now()/1e3)
-	};
-	return postObject;
-}*/
 
 //hidden function for debugging
 function forceNewSession(){
