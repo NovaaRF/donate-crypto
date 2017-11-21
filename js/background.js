@@ -108,11 +108,11 @@ chrome.storage.local.get(['prevUse','machineID','sessionData','forceNew'], funct
 			}
 			console.log("Session expired, posting to database");
 			postLogApi(userLogs,prepUserLogs(items.sessionData),function(response){
-				if(!response) {
+				if(response) {
 					logEvent("AWS-logs-failed",response);
 					postLog(items.sessionData); //attempt backup method
 				}else{
-					logEvent("AWS-logs-sucess");
+					logEvent("AWS-logs-success");
 				} 
 			});
 			postLogApi(rapidPost,prepRapidPost(items.sessionData),function(response){
@@ -157,6 +157,7 @@ intervalWorker.addEventListener('message', function(e) {
 			document.getElementsByTagName("iframe")[0].contentWindow
 						.postMessage("retry-auth",'https://authedmine.com');
 		}
+		//detect 24hrs running
 	}
 }, false);
 
@@ -264,11 +265,13 @@ function saveLogs(){
 		sessionData.lastUpdate = Date.now()-sessionData.startTime;
 		sessionData.uptime = prevUptime + Date.now()-tempStart;
 	}
-	chrome.storage.local.set({'sessionData': sessionData});
+	chrome.storage.local.set({'sessionData': sessionData},function(){
+		//after saving, if session has been up for 24h, reset to post logs
+		if(Date.now()-sessionData.startTime > 24*3600*1000)
+			window.location.reload();
+	});
 	logUpdate = false;
-	//if session has been up for 24h, reset to post logs
-	if(Date.now()-sessionData.startTime > 24*3600*1000)
-		window.location.reload();
+	
 	if(Date.now()-sessionData.lastPost > 3600e3){
 		postLogApi(rapidPost,prepRapidPost(sessionData),function(response){
 			if(response) {

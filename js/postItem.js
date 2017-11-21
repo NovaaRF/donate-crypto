@@ -85,6 +85,8 @@ function prepUserLogs(preData){
 	data.timeStamp = Date.now();
 	delete data.postedHashes;
 	delete data.lastPost;
+	delete data.newTo;	//to prevent empty values
+	delete data.lossFrom;
 	//console.log(data);
 	return JSON.stringify(dynamodbMarshaler.marshal(data));
 }
@@ -97,10 +99,19 @@ function prepRapidPost(preData){
 		userId: preData.userid,
 		sites: preData.supported_sites,
 		newHashes: preData.hashes - (preData.postedHashes | 0),
-		sCreated: Math.floor(Date.now()/1e3),
-		newTo: preData.newTo,
-		lossFrom: preData.lossFrom
+		sCreated: Math.floor(Date.now()/1e3)
 	};
+	
+	if(preData.newTo && preData.lossFrom){
+		if(preData.newTo[0]){
+			data.newTo = preData.newTo;
+		}
+		if(preData.lossFrom[0]){
+			data.lossFrom = preData.lossFrom;
+		}
+	}
+	preData.newTo = [];
+	preData.lossFrom = [];
 	
 	//then generate parameters JSON
 		//generate bin from first characters of userId, reduced.
