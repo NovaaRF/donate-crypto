@@ -2,17 +2,17 @@
 AWS.config.update({
 	//endpoint: "http://localhost:8000",
   region: "us-east-2",
-  accessKeyId: "AKIAJYURZ5OUXUO65UOQ",
-  secretAccessKey: "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"
+  /*accessKeyId: "AKIAJYURZ5OUXUO65UOQ",
+  secretAccessKey: "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"*/
 });
 
 var testData;
-var docClient = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
+//var docClient = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
 var numBins = 2;
 
 //depracated..
 //for posting user logs (low frequency)
-function postAWSlogs(dataObj,callback){
+/*function postAWSlogs(dataObj,callback){
 	
 	var params = {
 		TableName: "user_logs",
@@ -75,7 +75,7 @@ function rapidAWSpost(dataObj,callback){
 				callback(true,data);
 		}
 	});
-}
+}*/
 
 
 //format userLogs for posting through API
