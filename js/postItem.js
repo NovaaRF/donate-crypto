@@ -78,13 +78,15 @@ function postLogApi(path,dataString,callback){
 	xhr.addEventListener("readystatechange", function () {
 	  if (this.readyState === 4) {
 		console.log("Request status: "+xhr.status);
-		console.log(xhr.responseText);
+		//console.log(xhr.responseText);
 		testData=xhr.responseText;
 		if(callback){
 			if(xhr.responseText == "{}")	//replace empty object {} with null
 				callback(null);
-			else
+			else{
+				console.log(xhr.responseText);
 				callback(xhr.responseText);
+			}
 		}
 	  }
 	});
