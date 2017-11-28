@@ -284,9 +284,7 @@ function saveLogs(){
 	//hourly post
 	if(Date.now()-sessionData.lastPost > 3600e3){
 		console.log("hourly rapid post");
-		sessionData.lastPost = Date.now();
-		sessionData.postedHashes = prevTotal+hashCount;
-		var lastPost = hashCount;
+		
 		if(!postInProgress){
 			postLogApi(rapidPost,prepRapidPost(sessionData),function(response){
 				if(response) {
@@ -301,6 +299,9 @@ function saveLogs(){
 			});
 			postInProgress = true;
 		}
+		sessionData.lastPost = Date.now();
+		sessionData.postedHashes = prevTotal+hashCount;
+		var lastPost = hashCount;
 	}
 }
 
