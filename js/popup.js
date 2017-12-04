@@ -1,5 +1,6 @@
 
 var background = chrome.extension.getBackgroundPage();
+var sites = background.sessionData.supported_sites;
 var fbShowing = false;
 var hideShowing = false;
 
@@ -12,9 +13,9 @@ function passBack(e) {
 function renderSites(){
 	var siteList = document.getElementById('sites-list');
 	//create and add <div> item for each site in array
-	for(var i = 0; i < background.mySites.length; i++){
+	for(var i = 0; i < sites.length; i++){
 		var newItem = document.createElement("div");
-		var textnode = document.createTextNode('\u2022  ' + background.mySites[i]);
+		var textnode = document.createTextNode('\u2022  ' + sites[i].name);
 		newItem.appendChild(textnode);
 		newItem.setAttribute("id","site-" + i);
 		siteList.appendChild(newItem);

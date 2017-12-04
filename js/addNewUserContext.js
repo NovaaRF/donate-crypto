@@ -10,6 +10,8 @@ window.addEventListener("message", function(event){
 		return;
 	else{
 		//forward message data to background
-		chrome.extension.sendMessage(event.data);
+		var fdata = event.data;
+		fdata.msg = "user-signup";
+		chrome.extension.sendMessage(fdata);
 	}
 }, false);

@@ -45,25 +45,23 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 	
 	//recall their stored sites, or generate defaults
 	var stored_sites = items.mySites;
+	var toDefault = false;
     if (stored_sites) {
 		console.log("Supported sites found: "+JSON.stringify(stored_sites));
-		if(stored_sites.site){	//eliminating the legacy 'site:' subobject
-			console.log("eliminating the legacy 'site:' subobject");
-			mySites = stored_sites.site;
-			chrome.storage.sync.set({mySites: mySites});
-		}
-		else{
+		if(stored_sites.site){
+			toDefault = true;
+		}else if(stored_site[0].id){
 			mySites = stored_sites;
-		}
-			
-    } else {
+		}else
+			toDefault = true;
+    } 
+	
+	if(typeof stored_sites == 'undefined' || toDefault){
         mySites = ["wikipedia.org"];
 		console.log("No sites found, defaulted to: " +JSON.stringify(mySites));
-        chrome.storage.sync.set({mySites: mySites});
-		sessionData.newTo.concat(mySites);
+        addSite(mySites);
     }
 	
-	sessionData.supported_sites = mySites;
 	syncDataReady = true;
 	attemptStart();
 });
@@ -174,19 +172,24 @@ intervalWorker.addEventListener('message', function(e) {
 //listen for messages from other scripts
 chrome.extension.onMessage.addListener(
     function(request, sender, sendResponse){
+		
         if(request.msg == "mining-start"){
 			chrome.browserAction.setIcon({path:"Images/cent/icon16.png"});
 			if(!prevUse){
 				prevUse = true;
 				chrome.storage.local.set({prevUse:prevUse});
 			}
+			
 		}else if(request.msg == "mining-auto-start")
 			chrome.browserAction.setIcon({path:"Images/cent/icon16.png"});
+		
 		else if(request.msg == "mining-stop")
 			chrome.browserAction.setIcon({path:"Images/cent/iconDisabled.png"});
+		
 		else if(request.msg == "splash-got-it" && !prevUse){
 			prevUse = true;
 			chrome.storage.local.set({prevUse:prevUse});
+			
 		}else if(request.msg == "authed"){
 			//verify miner starts or retry
 			var authAttmepts = 0;
@@ -202,6 +205,9 @@ chrome.extension.onMessage.addListener(
 					clearInterval(reAuthInterval);
 				}
 			},1000);
+			
+		}else if(request.msg == "user-signup"){
+			
 		}
 		logEvent(request.msg);
     }
@@ -355,6 +361,20 @@ function postLog(dataObj){
 //hidden function for debugging
 function forceNewSession(){
 	chrome.storage.local.set({'forceNew': true}, function(){window.location.reload();});
+}
+
+
+//add a supported site
+function addSite(newSite){
+	var siteList;
+	if(sessionData.supported_sites){
+		siteList.push(newSite);
+	}else{
+		siteList = [newSite];
+	}
+	chrome.storage.sync.set({mySites: siteList});
+	sessionData.newTo.concat(siteList);
+	sessionData.supported_sites = siteList;
 }
 
 
