@@ -264,6 +264,8 @@ function logEvent(e,detail){
 	logUpdate = true;
 }
 
+
+var lastPost = 0;
 var postInProgress = false;
 //store logs to local storage, trigger timed events
 function saveLogs(){
