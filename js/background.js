@@ -47,7 +47,8 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 	var toDefault = false;
     if (stored_sites) {
 		console.log("Supported sites found: "+JSON.stringify(stored_sites));
-		if(stored_sites.site){	//get rid of legacy site structures
+		//get rid of legacy site structures
+		if(stored_sites.site){
 			toDefault = true;
 		}else if(stored_site[0].id){
 			sessionData.supported_sites = stored_sites;
@@ -56,9 +57,24 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
     } 
 	
 	if(typeof stored_sites == 'undefined' || toDefault){
-        var defaultSites = {id:"wikipedia.org",name:"wikipedia.org"};
-		console.log("No sites found, defaulted to: " +JSON.stringify(defaultSites));
-        addSite(defaultSites);
+		//check for referral cookie
+		var details = {domain:"getcollectiv.com"};
+		chrome.cookies.getAll(details,function(cookies){
+			var startingSite;
+			if(cookies.length > 0){
+				for(int i=0;i<cookies.length;i++){
+					if(cookies[i].name == "referral-id")
+						startingSite.id = cookies[i].value;
+					if(cookies[i].name == "site-name")
+						startingSite.name = cookies[i].value;
+				}
+				console.log("Found referral cookie from: " +startingSite.name);
+			}else{
+				startingSite = {id:"wikipedia.org",name:"wikipedia.org"};
+				console.log("No sites found, defaulted to: " +startingSite.name);
+			}
+			addSite(startingSite);
+		});
     }
 	
 	syncDataReady = true;
