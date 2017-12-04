@@ -56,7 +56,7 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
     } 
 	
 	if(typeof stored_sites == 'undefined' || toDefault){
-        var defaultSites = ["wikipedia.org"];
+        var defaultSites = {id:"wikipedia.org",name:"wikipedia.org"};
 		console.log("No sites found, defaulted to: " +JSON.stringify(defaultSites));
         addSite(defaultSites);
     }
