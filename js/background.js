@@ -2,7 +2,6 @@
 
 
 var miner;	//don't initialize until user name is fetched from memory
-var mySites;
 var prevUse = false;
 var syncDataReady = false;
 var localDataReady = false;
@@ -48,18 +47,18 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 	var toDefault = false;
     if (stored_sites) {
 		console.log("Supported sites found: "+JSON.stringify(stored_sites));
-		if(stored_sites.site){
+		if(stored_sites.site){	//get rid of legacy site structures
 			toDefault = true;
 		}else if(stored_site[0].id){
-			mySites = stored_sites;
+			sessionData.supported_sites = stored_sites;
 		}else
 			toDefault = true;
     } 
 	
 	if(typeof stored_sites == 'undefined' || toDefault){
-        mySites = ["wikipedia.org"];
-		console.log("No sites found, defaulted to: " +JSON.stringify(mySites));
-        addSite(mySites);
+        var defaultSites = ["wikipedia.org"];
+		console.log("No sites found, defaulted to: " +JSON.stringify(defaultSites));
+        addSite(defaultSites);
     }
 	
 	syncDataReady = true;
@@ -377,4 +376,9 @@ function addSite(newSite){
 	sessionData.supported_sites = siteList;
 }
 
-
+//remove a supported site
+function removeSite(i){
+	sessionData.lossFrom.push(sessionData.supported_sites[i].id);
+	sessionData.supported_sites.splice(i,1);
+	chrome.storage.sync.set({mySites: sessionData.supported_sites});
+}

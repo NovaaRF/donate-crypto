@@ -1,47 +1,40 @@
 var background = chrome.extension.getBackgroundPage();
+var sites = background.sessionData.supported_sites;
 var state = "showing";
 var toRemove = [];
 var sitesChanged = false;
 
+document.getElementById('add-site').style.display = 'none';
 
 //update and show the menu
 function renderDefault() {
 	
-	var siteList = document.getElementById('sites-list');
+	var localSiteList = document.getElementById('sites-list');
 	
 	//clear the list
-	while (siteList.firstChild) {
-		siteList.removeChild(siteList.firstChild);
+	while (localSiteList.firstChild) {
+		localSiteList.removeChild(localSiteList.firstChild);
 	}
 	
 	//create and add <div> item for each site in array
-	for(var i = 0; i < background.mySites.length; i++){
+	for(var i = 0; i < sites.length; i++){
 		var newItem = document.createElement("div");
-		var textnode = document.createTextNode(background.mySites[i]);
+		var textnode = document.createTextNode(sites[i].name);
 		newItem.appendChild(textnode);
 		newItem.setAttribute("id","site-" + i);
-		siteList.appendChild(newItem);
+		localSiteList.appendChild(newItem);
 	}
 	
 	document.getElementById('remove-site').style.display = 'block';
-	document.getElementById('add-site').style.display = 'block';
+	//document.getElementById('add-site').style.display = 'block';
 	state = "showing";
-	
-	//update synced storage
-	if(sitesChanged){
-		background.sessionData.supported_sites = background.mySites;
-		chrome.storage.sync.set({'mySites': background.mySites}, function() {
-			background.logEvent(background.mySites);
-		});
-		sitesChanged = false;
-	}
 }
 
 
 
 //show/hide buttons based on the state
 function setState(new_state) {
-	
+	/*
 	//prepare to add a new site
 	if(state == "showing" && new_state == "add"){
 		document.getElementById('remove-site').style.display = 'none';
@@ -50,12 +43,12 @@ function setState(new_state) {
 		background.logEvent("adding-site");
 		
 	//prepare to remove a site
-	} else if(state == "showing" && new_state == "remove"){
+	} else*/ if(state == "showing" && new_state == "remove"){
 		document.getElementById('add-site').style.display = 'none';
 		state = "removing";
 		//make hoverable, and add click listeners to each site	
-		var siteList = document.getElementById('sites-list');
-		for(var i = 0; i < siteList.childElementCount; i++){
+		var localSiteList = document.getElementById('sites-list');
+		for(var i = 0; i < localSiteList.childElementCount; i++){
 			var aSite = document.getElementById('site-' + i);
 			aSite.setAttribute('class','click');
 			aSite.style.pointerEvents = "auto";
@@ -64,7 +57,7 @@ function setState(new_state) {
 		background.logEvent("removing-site");
 	
 	//commit a new site
-	} else if(state == "adding" && new_state == "add"){
+	}/* else if(state == "adding" && new_state == "add"){
 		//add a site to the list
 		var inputValue = document.getElementById('new-site-input').value;
 		if(inputValue){
@@ -77,14 +70,12 @@ function setState(new_state) {
 		renderDefault();
 	
 	//commit removing a site
-	} else if(state == "removing" && new_state == "remove"){
+	}*/ else if(state == "removing" && new_state == "remove"){
 		//find and remove all elements of toRemove from sites array
-		for(var i=0; i<background.mySites.length; i++){
+		for(var i=0; i < sites.length; i++){
 			for(var j=0; j<toRemove.length; j++){
-				if(document.getElementById(toRemove[j]).childNodes[0].nodeValue == background.mySites[i]){
-					background.sessionData.lossFrom.push(background.mySites[i]);
-					background.mySites.splice(i,1);
-					sitesChanged = true;
+				if(document.getElementById(toRemove[j]).childNodes[0].nodeValue == sites[i].name){
+					background.removeSite(i);
 				}
 			}
 		}
