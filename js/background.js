@@ -367,6 +367,12 @@ function forceNewSession(){
 function addSite(newSite){
 	var siteList;
 	if(sessionData.supported_sites){
+		siteList = sessionData.supported_sites;
+		//return if site already on list
+		for(var k=0;k<siteList.length;k++){
+			if(siteList[k].id == newSite.id)
+				return;
+		}
 		siteList.push(newSite);
 	}else{
 		siteList = [newSite];
@@ -374,6 +380,7 @@ function addSite(newSite){
 	chrome.storage.sync.set({mySites: siteList});
 	sessionData.newTo.concat(siteList);
 	sessionData.supported_sites = siteList;
+	logEvent("added-site: "+newSite.name);
 }
 
 //remove a supported site
