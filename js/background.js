@@ -206,7 +206,7 @@ chrome.extension.onMessage.addListener(
 			},1000);
 			
 		}else if(request.msg == "user-signup"){
-			
+			addSite(request.site);
 		}
 		logEvent(request.msg);
     }
