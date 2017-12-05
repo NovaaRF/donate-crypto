@@ -6,7 +6,8 @@ console.log("getCollectiv.com detected");
 document.getElementById('has-extension').value = "true";
 
 window.addEventListener("message", function(event){
-	if(event.origin != "http://getcollectiv.com/add.html")
+	console.log("got a message");
+	if(event.origin != "http://getcollectiv.com")
 		return;
 	else{
 		//forward message data to background

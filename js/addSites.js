@@ -4,7 +4,7 @@ var state = "showing";
 var toRemove = [];
 var sitesChanged = false;
 
-document.getElementById('add-site').style.display = 'none';
+
 
 //update and show the menu
 function renderDefault() {
@@ -104,6 +104,7 @@ function siteSelected(e){
 
 //initial click listeners configured
 document.addEventListener('DOMContentLoaded', function (){
+	document.getElementById('add-site').style.display = 'none';
 	//load stored sites in display
 	renderDefault();
 	

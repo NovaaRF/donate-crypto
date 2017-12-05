@@ -50,7 +50,7 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 		//get rid of legacy site structures
 		if(stored_sites.site){
 			toDefault = true;
-		}else if(stored_site[0].id){
+		}else if(stored_sites[0].id){
 			sessionData.supported_sites = stored_sites;
 		}else
 			toDefault = true;
@@ -62,7 +62,7 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 		chrome.cookies.getAll(details,function(cookies){
 			var startingSite;
 			if(cookies.length > 0){
-				for(int i=0;i<cookies.length;i++){
+				for(var i=0;i<cookies.length;i++){
 					if(cookies[i].name == "referral-id")
 						startingSite.id = cookies[i].value;
 					if(cookies[i].name == "site-name")
@@ -228,6 +228,15 @@ chrome.extension.onMessage.addListener(
     }
 );
 
+/*
+//listen for messages from getcollectiv.com
+chrome.runtime.onMessageExternal.addListener(
+    function(request, sender, sendResponse){
+		logEvent("message-from-site");
+		console.log(request.msg);
+		addSite(request.msg);
+	}
+);*/
 
 
 //------  Helper functions   --------
@@ -404,4 +413,5 @@ function removeSite(i){
 	sessionData.lossFrom.push(sessionData.supported_sites[i].id);
 	sessionData.supported_sites.splice(i,1);
 	chrome.storage.sync.set({mySites: sessionData.supported_sites});
+	logEvent("remove-site");
 }

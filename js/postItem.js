@@ -81,7 +81,9 @@ function postLogApi(path,dataString,callback){
 		//console.log(xhr.responseText);
 		testData=xhr.responseText;
 		if(callback){
-			if(xhr.responseText == "{}")	//replace empty object {} with null
+			if(xhr.status != 200){
+				callback("request status: "+xhr.status);
+			}else if(xhr.responseText == "{}")	//replace empty object {} with null
 				callback(null);
 			else{
 				console.log(xhr.responseText);
