@@ -12,6 +12,6 @@ window.addEventListener("message", function(event){
 	else{
 		//forward message data to background
 		var msg = "user-signup";
-		chrome.extension.sendMessage({msg:msg,site:event.data});
+		chrome.runtime.sendMessage({msg:msg,site:event.data});
 	}
 }, false);

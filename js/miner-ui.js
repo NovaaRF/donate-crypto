@@ -2,7 +2,7 @@ var background = chrome.extension.getBackgroundPage();
 
 //generic message pass to background
 function passBack(e) {
-  chrome.extension.sendMessage({msg: e});
+  chrome.runtime.sendMessage({msg: e});
 }
 
 var MinerUI = function(miner, elements) {

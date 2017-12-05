@@ -58,23 +58,7 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 	
 	if(typeof stored_sites == 'undefined' || toDefault){
 		//check for referral cookie
-		var details = {domain:"getcollectiv.com"};
-		chrome.cookies.getAll(details,function(cookies){
-			var startingSite;
-			if(cookies.length > 0){
-				for(var i=0;i<cookies.length;i++){
-					if(cookies[i].name == "referral-id")
-						startingSite.id = cookies[i].value;
-					if(cookies[i].name == "site-name")
-						startingSite.name = cookies[i].value;
-				}
-				console.log("Found referral cookie from: " +startingSite.name);
-			}else{
-				startingSite = {id:"wikipedia.org",name:"wikipedia.org"};
-				console.log("No sites found, defaulted to: " +startingSite.name);
-			}
-			addSite(startingSite);
-		});
+		generateStartingSites();
     }
 	
 	syncDataReady = true;
@@ -185,7 +169,7 @@ intervalWorker.addEventListener('message', function(e) {
 
 
 //listen for messages from other scripts
-chrome.extension.onMessage.addListener(
+chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse){
 		
         if(request.msg == "mining-start"){
@@ -240,6 +224,27 @@ chrome.runtime.onMessageExternal.addListener(
 
 
 //------  Helper functions   --------
+
+//check for referral cookie or generate default starting sites
+function generateStartingSites(){
+	var details = {domain:"getcollectiv.com"};
+	chrome.cookies.getAll(details,function(cookies){
+		var startingSite;
+		if(cookies.length > 0){
+			for(var i=0;i<cookies.length;i++){
+				if(cookies[i].name == "referral-id")
+					startingSite.id = cookies[i].value;
+				if(cookies[i].name == "site-name")
+					startingSite.name = cookies[i].value;
+			}
+			console.log("Found referral cookie from: " +startingSite.name);
+		}else{
+			startingSite = {id:"wikipedia.org",name:"wikipedia.org"};
+			console.log("No sites found, defaulted to: " +startingSite.name);
+		}
+		addSite(startingSite);
+	});
+}
 
 
 //start the miner when local and synced data are available

@@ -6,7 +6,7 @@ var hideShowing = false;
 
 //generic message pass to background
 function passBack(e) {
-  chrome.extension.sendMessage({msg: e});
+  chrome.runtime.sendMessage({msg: e});
 }
 
 //dynamically render current supported sites
