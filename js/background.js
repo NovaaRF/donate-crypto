@@ -428,7 +428,8 @@ function addSite(newSite){
 //remove a supported site
 function removeSite(i){
 	sessionData.lossFrom.push(sessionData.supported_sites[i].id);
+	var removed = sessionData.supported_sites[i].name;
 	sessionData.supported_sites.splice(i,1);
 	chrome.storage.sync.set({mySites: sessionData.supported_sites});
-	logEvent("remove-site");
+	logEvent("remove-site: "+removed);
 }
