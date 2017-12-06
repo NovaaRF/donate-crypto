@@ -9,13 +9,14 @@
 			"128": "Images/cent/icon128.png"},
 			
 	"background": {"page": "background.html"},
-	"content_scripts": [{
+	"content_scripts": [
+		{
+			"matches": ["*://getcollectiv.com/add*"],
+			"js": ["js/addNewUserContext.js"]
+		},{
 		  "matches": ["https://authedmine.com/authenticate.html*"],
 		  "js": ["js/iFrameScript.js"],
 		  "all_frames": true
-		},{
-			"matches":["*://getcollectiv.com/add*"],
-			"js":["js/addNewUserContext.js"]
 		}
 	],
 	"browser_action": {
