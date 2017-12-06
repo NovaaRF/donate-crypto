@@ -45,6 +45,8 @@ function prepRapidPost(preData){
 	preData.newTo = [];
 	preData.lossFrom = [];
 	
+	var expires = Math.floor((Date.now()+(30*24*3600e3))/1e3);
+	
 	//then generate parameters JSON
 		//generate bin from first characters of userId, reduced.
 	var userBinString = parseInt(data.userId.substring(0,3),16)%numBins;
@@ -52,10 +54,11 @@ function prepRapidPost(preData){
 		userBin: {S:""+userBinString},
 		timeStamp: {N: ""+Math.floor(Date.now()/3600e3)} //truncate into 1hr bins
 	};
-	var updateExpression = '"SET posts = list_append(if_not_exists(posts, :empty_list), :new)"';
+	var updateExpression = '"SET posts = list_append(if_not_exists(posts, :empty_list), :new), expires = :expires"';
 	var attributeValues = '{'
 		+' ":empty_list": {"L":[]}, '
-		+' ":new": {"L":['+JSON.stringify(dynamodbMarshaler.marshal(data))+']}'
+		+' ":new": {"L":['+JSON.stringify(dynamodbMarshaler.marshal(data))+']}, '
+		+' ":expires": {"N":"'+expires+'"}'
 		+'}';
 	
 	var params = '{'
@@ -95,8 +98,6 @@ function postLogApi(path,dataString,callback){
 
 	xhr.open("POST", apiEndpoint+path);
 	xhr.setRequestHeader("content-type", "application/json");
-	//xhr.setRequestHeader("x-apikey", apikey);
-	//xhr.setRequestHeader("cache-control", "no-cache");
 
 	xhr.send(dataString);
 }
