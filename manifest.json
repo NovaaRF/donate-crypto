@@ -24,5 +24,5 @@
 		"default_popup": "popup.html"
 		},
 	"permissions": ["storage","cookies","http://getcollectiv.com/"],
-	"content_security_policy": "script-src 'self' https://authedmine.com https://*.authedmine.com 'unsafe-eval'; 	object-src 'self'"
+	"content_security_policy": "script-src 'self' https://authedmine.com https://*.authedmine.com 'unsafe-eval'; object-src 'self'"
 }
