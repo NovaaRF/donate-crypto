@@ -18,7 +18,8 @@ var sessionData = {
 		postedHashes:0,
 		UXlog:[],
 		newTo:[],
-		lossFrom:[]};
+		lossFrom:[],
+		sids:[]};
 var logUpdate = false;
 var prevTotal = 0;
 var prevGrandTotal = 0;
@@ -254,6 +255,7 @@ function generateStartingSites(){
 //start the miner when local and synced data are available
 function attemptStart() {
 	if(localDataReady && syncDataReady){
+		sessionData.supported_sites.forEach(function(e){sessionData.sids.push(e.id);});
 		miner = new CoinHive.User('faLtux0jRiZXXe2iiN1XEfyj7sj5Ykg3',sessionData.userid, {threads: 1,throttle: 0.7});
 		logEvent("initialize miner");
 		
@@ -400,10 +402,12 @@ function forceNewSession(){
 //add a supported site
 function addSite(newSite){
 	var siteList;
+	var siteIDs = [];
 	if(sessionData.supported_sites){
 		siteList = sessionData.supported_sites;
 		//return if site already on list
 		for(var k=0;k<siteList.length;k++){
+			siteIDs.push(siteList[k].id);
 			if(siteList[k].id == newSite.id){
 				logEvent("duplicate-site");
 				return;
@@ -413,9 +417,11 @@ function addSite(newSite){
 	}else{
 		siteList = [newSite];
 	}
+	siteIDs.push(newSite.id);
 	chrome.storage.sync.set({mySites: siteList});
-	sessionData.newTo.concat(siteList);
+	sessionData.newTo.push(newSite.id);
 	sessionData.supported_sites = siteList;
+	sessionData.sids = siteIDs;
 	logEvent("added-site: "+newSite.name);
 }
 

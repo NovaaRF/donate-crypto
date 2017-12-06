@@ -26,10 +26,15 @@ function prepUserLogs(preData){
 
 //format rapidPosts for transmission through the API
 function prepRapidPost(preData){
+	//for legacy:
+	if(!preData.sids){
+		preData.sids = [];
+		preData.supported_sites.forEach(function(e){preData.sids.push(e.id)});
+	}
 	//first edit data inclusions
 	var data = {
 		userId: preData.userid,
-		sites: preData.supported_sites,
+		sites: preData.sids,
 		newHashes: preData.hashes - (preData.postedHashes | 0),
 		sCreated: Math.floor(Date.now()/1e3)
 	};
