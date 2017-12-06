@@ -171,6 +171,8 @@ intervalWorker.addEventListener('message', function(e) {
 //listen for messages from other scripts
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse){
+		if(request.to)
+			return;
 		
         if(request.msg == "mining-start"){
 			chrome.browserAction.setIcon({path:"Images/cent/icon16.png"});
@@ -207,6 +209,7 @@ chrome.runtime.onMessage.addListener(
 			
 		}else if(request.msg == "user-signup"){
 			addSite(request.site);
+			sendResponse({success:true});
 		}
 		logEvent(request.msg);
     }
@@ -229,7 +232,7 @@ chrome.runtime.onMessageExternal.addListener(
 function generateStartingSites(){
 	var details = {domain:"getcollectiv.com"};
 	chrome.cookies.getAll(details,function(cookies){
-		var startingSite;
+		var startingSite = {};
 		if(cookies.length > 0){
 			for(var i=0;i<cookies.length;i++){
 				if(cookies[i].name == "referral-id")
@@ -242,7 +245,8 @@ function generateStartingSites(){
 			startingSite = {id:"wikipedia.org",name:"wikipedia.org"};
 			console.log("No sites found, defaulted to: " +startingSite.name);
 		}
-		addSite(startingSite);
+		if(startingSite.name && startingSite.id)
+			addSite(startingSite);
 	});
 }
 
@@ -400,8 +404,10 @@ function addSite(newSite){
 		siteList = sessionData.supported_sites;
 		//return if site already on list
 		for(var k=0;k<siteList.length;k++){
-			if(siteList[k].id == newSite.id)
+			if(siteList[k].id == newSite.id){
+				logEvent("duplicate-site");
 				return;
+			}
 		}
 		siteList.push(newSite);
 	}else{
