@@ -60,10 +60,11 @@ chrome.storage.sync.get(['userid','mySites'], function(items) {
 	if(typeof stored_sites == 'undefined' || toDefault){
 		//check for referral cookie
 		generateStartingSites();
-    }
-	
-	syncDataReady = true;
-	attemptStart();
+    }else{
+		//only start if not waiting for cookie callback
+		syncDataReady = true;
+		attemptStart();
+	}
 });
 
 
@@ -242,12 +243,18 @@ function generateStartingSites(){
 					startingSite.name = cookies[i].value;
 			}
 			console.log("Found referral cookie from: " +startingSite.name);
+		}
+		//double check
+		if(startingSite.name && startingSite.id){
+			addSite(startingSite);
 		}else{
 			startingSite = {id:"wikipedia.org",name:"wikipedia.org"};
 			console.log("No sites found, defaulted to: " +startingSite.name);
-		}
-		if(startingSite.name && startingSite.id)
 			addSite(startingSite);
+		}
+		
+		syncDataReady = true;
+		attemptStart();
 	});
 }
 
