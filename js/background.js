@@ -19,6 +19,7 @@ var sessionData = {
 		UXlog:[],
 		newTo:[],
 		lossFrom:[],
+		supported_sites:[],
 		sids:[]};
 var logUpdate = false;
 var prevTotal = 0;
